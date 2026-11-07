@@ -1,0 +1,9 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 2rem;
+}
+
+.salam {
+  border-bottom: 2px solid #ccc;
+  margin-bottom: 1rem;
+}
