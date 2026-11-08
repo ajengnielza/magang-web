@@ -1,18 +1,18 @@
-export default function App() {
-  const nama = "Budi";
-  const tahun = new Date().getFullYear();
+import Header from "./components/Header";
+import DaftarPeserta from "./components/DaftarPeserta";
+import NomorUrut from "./components/NomorUrut";
+import { pesertaTiruan } from "./data/pesertaTiruan";
 
+export default function App() {
   return (
-    <>
-      <header className="salam">
-        <h1>Halo, {nama}!</h1>
-        <p>Tahun {tahun}, 1 + 1 = {1 + 1}</p>
-      </header>
-      <main>
-        <label htmlFor="email">Email</label>
-        <input id="email" type="email" />
-        <p style={{ color: "crimson" }}>Merah</p>
-      </main>
-    </>
+    <main>
+      <Header judul="Jurnal Magang" />
+
+      <DaftarPeserta peserta={pesertaTiruan} />
+
+      {pesertaTiruan.map((p, i) => (
+        <NomorUrut key={p.id} nomor={i + 1} />
+      ))}
+    </main>
   );
 }
