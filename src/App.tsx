@@ -1,3 +1,4 @@
+
 import Header from "./components/Header";
 import Kartu from "./components/Kartu";
 import DaftarPeserta from "./components/DaftarPeserta";
@@ -10,7 +11,15 @@ import HasilJurnal from "./components/HasilJurnal";
 import { pesertaTiruan } from "./data/pesertaTiruan";
 import { jurnalTiruan } from "./data/jurnalTiruan";
 
+import GaleriKomponen from "./pages/GaleriKomponen";
+
 export default function App() {
+  // Tampilkan galeri jika URL memiliki ?galeri
+  if (new URLSearchParams(window.location.search).has("galeri")) {
+    return <GaleriKomponen />;
+  }
+
+  // Halaman Jurnal Magang tetap seperti sebelumnya
   return (
     <main>
       <Header judul="Jurnal Magang" />

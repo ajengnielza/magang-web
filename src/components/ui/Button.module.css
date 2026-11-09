@@ -1,0 +1,37 @@
+.button {
+  border: none;
+  border-radius: var(--jari-jari);
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary {
+  background: var(--warna-utama);
+  color: white;
+}
+
+.secondary {
+  background: var(--warna-teks-redup);
+  color: white;
+}
+
+.danger {
+  background: var(--warna-bahaya);
+  color: white;
+}
+
+.sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.md {
+  padding: 10px 16px;
+  font-size: 14px;
+}

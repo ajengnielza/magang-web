@@ -2,6 +2,7 @@ export interface Lampiran {
   url: string;
   keterangan?: string;
 }
+export type StatusReview = "belum" | "disetujui" | "revisi";
 
 export interface Jurnal {
   id: number;
@@ -10,7 +11,7 @@ export interface Jurnal {
   kegiatan: string;
   hambatan: string | null;
   linkCommit: string | null;
-  statusReview: "belum" | "disetujui" | "revisi";
+  statusReview: StatusReview;
   catatanMentor: string | null;
   lampiran: Lampiran[] | null;
   createdAt: string; // ISO dari JSON, bukan Date

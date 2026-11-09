@@ -1,6 +1,7 @@
 
 import type { Peserta } from "../types/peserta";
 import InfoBaris from "./InfoBaris";
+import styles from "./peserta/PesertaCard.module.css";
 
 interface PesertaCardProps {
   peserta: Partial<Peserta>;
@@ -20,7 +21,9 @@ export default function PesertaCard({
   const email = peserta.email ?? "";
 
   return (
-    <article className={["kartu-peserta", warna].filter(Boolean).join(" ")}>
+    <article
+      className={[styles.kartu, warna].filter(Boolean).join(" ")}
+    >
       <h3>{nama}</h3>
 
       <InfoBaris label="Sekolah" nilai={sekolah} />

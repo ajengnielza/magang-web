@@ -1,0 +1,20 @@
+.grup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.grupBadge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.grupAlert {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

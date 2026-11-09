@@ -1,0 +1,12 @@
+.kartu {
+  background: var(--warna-permukaan);
+  border: 1px solid var(--warna-batas);
+  border-radius: var(--jari-jari);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.judul {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}

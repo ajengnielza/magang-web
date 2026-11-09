@@ -1,17 +1,36 @@
+:root {
+  --warna-utama: #2563eb;
+  --warna-bahaya: #dc2626;
+  --warna-sukses: #16a34a;
+  --warna-peringatan: #d97706;
+  --warna-teks: #1f2937;
+  --warna-teks-redup: #4b5563;
+  --warna-latar: #f9fafb;
+  --warna-permukaan: #ffffff;
+  --warna-batas: #e5e7eb;
+  --jari-jari: 8px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
+  margin: 0;
   font-family: system-ui, sans-serif;
-  margin: 2rem;
+  color: var(--warna-teks);
+  background: var(--warna-latar);
 }
 
-.salam {
-  border-bottom: 2px solid #ccc;
-  margin-bottom: 1rem;
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
 }
 
-.kartu-peserta,
-.kartu {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 0.75rem;
+:focus-visible {
+  outline: 3px solid #111827;
+  outline-offset: 3px;
 }
