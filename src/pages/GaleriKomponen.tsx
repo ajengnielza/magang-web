@@ -6,7 +6,7 @@ import Button, {
   type ButtonSize,
   type ButtonVariant,
 } from "../components/ui/Button";
-import Kartu from "../components/Kartu";
+import Kartu from "../components/ui/Kartu";
 import StatusBadge from "../components/jurnal/StatusBadge";
 import styles from "./GaleriKomponen.module.css";
 import type { StatusReview } from "../types/jurnal";

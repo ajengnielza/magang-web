@@ -1,4 +1,4 @@
-import PesertaCard from "../components/PesertaCard";
+import PesertaCard from "../components/peserta/PesertaCard";
 import { pesertaTiruan } from "../data/pesertaTiruan";
 import HasilJurnal from "../components/HasilJurnal";
 
@@ -8,7 +8,7 @@ export function UjiTipe() {
   return (
     <>
       {/* 1. Fase bertipe string */}
-      <PesertaCard peserta={{ ...budi, fase: "1" }} />
+      <PesertaCard peserta={{ ...budi, fase: 1 }} />
 
       {/* 2. Prop yang tidak dikenal */}
       <PesertaCard peserta={budi} warna="merah" />

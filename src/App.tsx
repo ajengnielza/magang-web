@@ -1,69 +1,32 @@
-
-import Header from "./components/Header";
-import Kartu from "./components/Kartu";
-import DaftarPeserta from "./components/DaftarPeserta";
-import NomorUrut from "./components/NomorUrut";
-import DaftarJurnal from "./components/DaftarJurnal";
-import JumlahJurnal from "./components/JumlahJurnal";
-import RingkasanJurnal from "./components/RingkasanJurnal";
-import HasilJurnal from "./components/HasilJurnal";
-
-import { pesertaTiruan } from "./data/pesertaTiruan";
+import DaftarJurnal from "./components/jurnal/DaftarJurnal";
+import RingkasanJurnal from "./components/jurnal/RingkasanJurnal";
+import Header from "./components/layout/Header";
+import Kartu from "./components/ui/Kartu";
 import { jurnalTiruan } from "./data/jurnalTiruan";
-
+import { pesertaTiruan } from "./data/pesertaTiruan";
 import GaleriKomponen from "./pages/GaleriKomponen";
 
 export default function App() {
-  // Tampilkan galeri jika URL memiliki ?galeri
   if (new URLSearchParams(window.location.search).has("galeri")) {
     return <GaleriKomponen />;
   }
 
-  // Halaman Jurnal Magang tetap seperti sebelumnya
+  const pemilik = pesertaTiruan[0];
+
+if (!pemilik) {
+  return <p>Data peserta tidak ditemukan.</p>;
+}
+
   return (
-    <main>
-      <Header judul="Jurnal Magang" />
-
-      <Kartu judul="Daftar Peserta">
-        <DaftarPeserta peserta={pesertaTiruan} />
-
-        {pesertaTiruan.map((peserta, index) => (
-          <NomorUrut key={peserta.id} nomor={index + 1} />
-        ))}
-      </Kartu>
-
-      <Kartu judul="Peserta Kosong">
-        <DaftarPeserta peserta={[]} />
-      </Kartu>
-
-      <Kartu judul="Daftar Jurnal">
-        <DaftarJurnal jurnal={jurnalTiruan} />
-      </Kartu>
-
-      <Kartu judul="Jurnal Kosong">
-        <DaftarJurnal jurnal={[]} />
-      </Kartu>
-
-      <Kartu judul="Jumlah Jurnal">
-        <JumlahJurnal jumlah={4} />
-        <JumlahJurnal jumlah={0} />
-      </Kartu>
-
-      <Kartu judul="Ringkasan Jurnal">
-        <RingkasanJurnal jurnal={jurnalTiruan} />
-      </Kartu>
-
-      <Kartu judul="Jurnal Berhasil">
-        <HasilJurnal status="berhasil" data={jurnalTiruan} />
-      </Kartu>
-
-      <Kartu judul="Jurnal Memuat">
-        <HasilJurnal status="memuat" />
-      </Kartu>
-
-      <Kartu judul="Jurnal Gagal">
-        <HasilJurnal status="gagal" pesan="Koneksi terputus" />
-      </Kartu>
-    </main>
+    <>
+      <Header judul="Jurnal Magang" namaPeserta={pemilik.nama} />
+      <main>
+        <Kartu judul="Ringkasan">
+          <RingkasanJurnal jurnal={jurnalTiruan} />
+        </Kartu>
+        {/* sementara: dihubungkan ke state di Minggu 18 */}
+        <DaftarJurnal jurnal={jurnalTiruan} onHapus={(id) => console.log("Hapus jurnal", id)} />
+      </main>
+    </>
   );
 }

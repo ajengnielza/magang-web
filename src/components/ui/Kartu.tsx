@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import styles from "./ui/Kartu.module.css";
+import styles from "./Kartu.module.css";
 
 interface KartuProps {
   judul: string;

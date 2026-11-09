@@ -1,6 +1,6 @@
 
-import type { Peserta } from "../types/peserta";
-import InfoBaris from "./InfoBaris";
+import type { Peserta } from "../../types/peserta";
+import InfoBaris from "../InfoBaris";
 import styles from "./peserta/PesertaCard.module.css";
 
 interface PesertaCardProps {
