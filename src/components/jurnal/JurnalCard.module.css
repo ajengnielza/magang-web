@@ -14,3 +14,12 @@
   color: var(--warna-teks-redup);
   font-size: 0.9rem;
 }
+
+.aksi {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.detail {
+  margin-top: 0.5rem;
+}
