@@ -1,13 +1,15 @@
-import type { Jurnal } from "../../types/jurnal";
+import type { Jurnal, StatusReview } from "../../types/jurnal";
 import Alert from "../ui/Alert";
 import JurnalCard from "./JurnalCard";
 
 interface DaftarJurnalProps {
   jurnal: readonly Jurnal[];
   onHapus?: (id: number) => void;
+  onUbahStatus?: (id: number, status: StatusReview) => void;
 }
 
-export default function DaftarJurnal({ jurnal, onHapus }: DaftarJurnalProps) {
+export default function DaftarJurnal({ jurnal, onHapus, onUbahStatus }: DaftarJurnalProps) {
+  
   if (jurnal.length === 0) {
     return <Alert tipe="info">Belum ada jurnal.</Alert>;
   }
@@ -19,7 +21,7 @@ export default function DaftarJurnal({ jurnal, onHapus }: DaftarJurnalProps) {
   return (
     <section aria-label="Daftar jurnal">
       {terbaruDulu.map((j) => (
-        <JurnalCard key={j.id} jurnal={j} onHapus={onHapus} />
+        <JurnalCard key={j.id} jurnal={j} onHapus={onHapus} onUbahStatus={onUbahStatus} />
       ))}
     </section>
   );

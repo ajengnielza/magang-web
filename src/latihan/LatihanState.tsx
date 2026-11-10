@@ -1,12 +1,13 @@
+
 import Kartu from "../components/ui/Kartu";
 import Penghitung from "../latihan/Penghitung";
 import PenghitungSnapshot from "../latihan/PenghitungSnapshot";
 import PenghitungVariabel from "../latihan/PenghitungVariabel";
 import TipeState from "../latihan/TipeState";
-
+import DemoKunciIndeks from "../latihan/DemoKunciIndeks";
+import ProfilAlamat from "../latihan/ProfilAlamat";
 
 export default function LatihanState() {
-    
   return (
     <main>
       <h1>Latihan State</h1>
@@ -27,7 +28,14 @@ export default function LatihanState() {
       <Kartu judul="Tipe state">
         <TipeState />
       </Kartu>
-      
+
+      <Kartu judul="Bug key indeks">
+        <DemoKunciIndeks />
+      </Kartu>
+
+      <Kartu judul="Latihan objek bersarang">
+        <ProfilAlamat />
+      </Kartu>
     </main>
   );
 }

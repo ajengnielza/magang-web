@@ -69,3 +69,20 @@ Frontend dan backend dibuat sebagai dua aplikasi terpisah karena memiliki fungsi
 ### Mengapa Key Menggunakan ID, Bukan Indeks?
 
 React menggunakan `key` untuk mengenali setiap item dalam daftar ketika data ditambahkan, dihapus, atau diurutkan ulang. ID lebih tepat digunakan karena setiap data memiliki identitas yang unik dan tetap. Sementara itu, indeks hanya menunjukkan posisi item dalam array sehingga bisa berubah ketika urutan data berubah.
+
+## Refleksi Minggu 18: Kenapa Key Indeks Menimbulkan Bug
+
+React menggunakan key untuk mengenali setiap elemen dalam daftar. Ketika menggunakan indeks sebagai key, penghapusan item pertama membuat item berikutnya menempati indeks yang sama. React dapat menganggap elemen tersebut masih sama dan menggunakan kembali elemen input beserta isinya. Akibatnya, teks yang saya ketik pada item pertama dapat berpindah ke item berikutnya. Dengan menggunakan key unik dan stabil seperti ID data, React dapat mengenali setiap item dengan benar.
+
+## Alur Data dan Pengelolaan State
+
+```text
+App (tanpa state)
+ └─ DaftarJurnalPage       state: jurnal
+     ├─ Header              judul, namaPeserta
+     ├─ RingkasanJurnal     jurnal
+     ├─ Button "Pulihkan"   → setJurnal
+     └─ DaftarJurnal        jurnal, onHapus, onUbahStatus
+          └─ JurnalCard    jurnal, onHapus, onUbahStatus
+               │           state lokal: terbuka
+               └─ Button  → onHapus(id) / onUbahStatus(id, status)
