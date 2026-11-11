@@ -1,0 +1,33 @@
+
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.kolom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.input {
+  font: inherit;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--warna-batas);
+  border-radius: var(--jari-jari);
+  background: var(--warna-permukaan);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--warna-bahaya);
+}
+
+.error {
+  margin: 0;
+  color: var(--warna-bahaya);
+  font-size: 0.9rem;
+}

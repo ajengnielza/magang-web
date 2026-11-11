@@ -16,3 +16,8 @@ export interface Jurnal {
   lampiran: Lampiran[] | null;
   createdAt: string; // ISO dari JSON, bukan Date
 }
+
+export type JurnalBaru = Pick<
+  Jurnal,
+  "kegiatan" | "hambatan" | "linkCommit"
+>;
