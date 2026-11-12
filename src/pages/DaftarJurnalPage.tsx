@@ -1,26 +1,47 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import DaftarJurnal from "../components/jurnal/DaftarJurnal";
 import RingkasanJurnal from "../components/jurnal/RingkasanJurnal";
 import Header from "../components/layout/Header";
 import Button from "../components/ui/Button";
 import Kartu from "../components/ui/Kartu";
+import Alert from "../components/ui/Alert";
+import FormJurnal from "../components/jurnal/FormJurnal";
+import FilterStatusJurnal from "../components/jurnal/FilterStatusJurnal";
+import PencarianJurnal from "../components/jurnal/PencarianJurnal";
 import { jurnalTiruan } from "../data/jurnalTiruan";
 import { pesertaTiruan } from "../data/pesertaTiruan";
-import type { Jurnal, JurnalBaru, StatusReview } from "../types/jurnal";
-import FormJurnal from "../components/jurnal/FormJurnal";
-import JebakanTerkontrol from "../latihan/JebakanTerkontrol";
-import FormProfil from "../latihan/FormProfil";
-import KolomLain from "../latihan/KolomLain";
+import type { Jurnal, JurnalBaru, StatusReview, FilterStatus,
+} from "../types/jurnal";
+import styles from "./DaftarJurnalPage.module.css";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+import { adalahDaftarJurnal } from "../utils/guard";
 
 export default function DaftarJurnalPage() {
-  const [jurnal, setJurnal] = useState<Jurnal[]>(jurnalTiruan);
+const [jurnal, setJurnal] = useLocalStorage<Jurnal[]>(
+  "jurnal-magang-v1",
+  jurnalTiruan,
+  adalahDaftarJurnal
+);
+  const [filter, setFilter] = useState<FilterStatus>("semua");
+  const [kataKunci, setKataKunci] = useState("");
 
   const pemilik = pesertaTiruan[0];
 
+  // DATA TURUNAN: tidak disimpan sebagai state
+  const kataCari = kataKunci.trim().toLowerCase();
+
+  const tampil = jurnal
+    .filter((j) => filter === "semua" || j.statusReview === filter)
+    .filter((j) => j.kegiatan.toLowerCase().includes(kataCari));
+  
+  // JUDUL TAB DINAMIS
+useEffect(() => {
+  document.title = `Jurnal Magang (${jurnal.length})`;
+}, [jurnal.length]);
   function hapusJurnal(id: number) {
     setJurnal((daftar) => daftar.filter((j) => j.id !== id));
   }
-  
 
   function ubahStatus(id: number, status: StatusReview) {
     setJurnal((daftar) =>
@@ -29,8 +50,8 @@ export default function DaftarJurnalPage() {
           ? {
               ...j,
               statusReview: status,
-              // sama seperti backend: status belum mengosongkan catatan mentor
-              catatanMentor: status === "belum" ? null : j.catatanMentor,
+              catatanMentor:
+                status === "belum" ? null : j.catatanMentor,
             }
           : j
       )
@@ -38,60 +59,69 @@ export default function DaftarJurnalPage() {
   }
 
   function tambahJurnal(data: JurnalBaru) {
-  const baru: Jurnal = {
-    id: Math.max(0, ...jurnal.map((j) => j.id)) + 1,
-    pesertaId: pemilik.id,
-    reviewerId: null,
-    ...data,
-    lampiran: null,
-    statusReview: "belum",
-    catatanMentor: null,
-    createdAt: new Date().toISOString(),
-  };
+    const baru: Jurnal = {
+      id: Math.max(0, ...jurnal.map((j) => j.id)) + 1,
+      pesertaId: pemilik.id,
+      reviewerId: null,
+      ...data,
+      lampiran: null,
+      statusReview: "belum",
+      catatanMentor: null,
+      createdAt: new Date().toISOString(),
+    };
 
-  setJurnal((daftar) => [baru, ...daftar]);
-}
+    setJurnal((daftar) => [baru, ...daftar]);
+  }
 
-  
-return (
-  <>
-    <Header judul="Jurnal Magang" namaPeserta={pemilik.nama} />
+  return (
+    <>
+      <Header judul="Jurnal Magang" namaPeserta={pemilik.nama} />
 
-    <main>
-      <Kartu judul="Ringkasan">
-        <RingkasanJurnal jurnal={jurnal} />
-      </Kartu>
+      <main>
+        <Kartu judul="Ringkasan">
+          <RingkasanJurnal jurnal={jurnal} />
+        </Kartu>
 
-      <p>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => setJurnal(jurnalTiruan)}
-        >
-          Pulihkan data contoh
-        </Button>
-      </p>
+        <p>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setJurnal(jurnalTiruan)}
+          >
+            Pulihkan data contoh
+          </Button>
+        </p>
 
-      <Kartu judul="Tambah jurnal">
-        <FormJurnal onTambah={tambahJurnal} />
-      </Kartu>
+        <Kartu judul="Tambah jurnal">
+          <FormJurnal onTambah={tambahJurnal} />
+        </Kartu>
 
-      <DaftarJurnal
-        jurnal={jurnal}
-        onHapus={hapusJurnal}
-        onUbahStatus={ubahStatus}
-      />
+        <Kartu judul="Filter">
+          <div className={styles.filter} role="search">
+            <FilterStatusJurnal
+              nilai={filter}
+              onUbah={setFilter}
+            />
 
-      <Kartu judul="Jebakan terkontrol">
-        <JebakanTerkontrol />
-      </Kartu>
-      <Kartu judul="Form profil">
-        <FormProfil />
-      </Kartu>
-      <Kartu judul="Select dan Checkbox">
-      <KolomLain />
-    </Kartu>
-    </main>
-  </>
-);
+            <PencarianJurnal
+              nilai={kataKunci}
+              onUbah={setKataKunci}
+            />
+          </div>
+        </Kartu>
+
+        {jurnal.length > 0 && tampil.length === 0 ? (
+          <Alert tipe="info">
+            Tidak ada jurnal yang cocok dengan filter.
+          </Alert>
+        ) : (
+          <DaftarJurnal
+            jurnal={tampil}
+            onHapus={hapusJurnal}
+            onUbahStatus={ubahStatus}
+          />
+        )}
+      </main>
+    </>
+  );
 }

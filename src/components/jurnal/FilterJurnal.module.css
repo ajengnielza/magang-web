@@ -1,0 +1,16 @@
+
+.kolom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.input {
+  font: inherit;
+  font-weight: 400;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--warna-batas);
+  border-radius: var(--jari-jari);
+  background: var(--warna-permukaan);
+}

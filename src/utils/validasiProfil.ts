@@ -8,9 +8,6 @@ export type FormProfilErrors = Partial<
   Record<keyof FormProfilState, string>
 >;
 
-// Mengikuti aturan backend:
-// 08, 62, atau +62, dilanjutkan 8[1-9]
-// dan 6 sampai 10 digit berikutnya.
 const POLA_TELEPON = /^(\+62|62|0)8[1-9][0-9]{6,10}$/;
 
 export function validasiFormProfil(

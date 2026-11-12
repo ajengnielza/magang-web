@@ -6,6 +6,8 @@ import PenghitungVariabel from "../latihan/PenghitungVariabel";
 import TipeState from "../latihan/TipeState";
 import DemoKunciIndeks from "../latihan/DemoKunciIndeks";
 import ProfilAlamat from "../latihan/ProfilAlamat";
+import EfekStrictMode from "../latihan/EfekStrictMode";
+import FormProfil from "../latihan/FormProfil";
 
 export default function LatihanState() {
   return (
@@ -36,6 +38,12 @@ export default function LatihanState() {
       <Kartu judul="Latihan objek bersarang">
         <ProfilAlamat />
       </Kartu>
+        <Kartu judul="StrictMode dan efek">
+    <EfekStrictMode />
+  </Kartu>
+  <Kartu judul="Form profil">
+  <FormProfil />
+</Kartu>
     </main>
   );
 }
