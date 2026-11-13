@@ -6,3 +6,4 @@ export const pesertaTiruan: Peserta[] = [
   { id: 3, nama: "Dewi Anggraini", sekolah: "SMK Negeri 4", email: "dewi@mail.com", fase: 2, status: "lulus", role: "peserta" },
   { id: 4, nama: "Rizky Pratama", sekolah: "SMK Negeri 1", email: "rizky@mail.com", fase: 3, status: "berhenti", role: "peserta" },
 ];
+

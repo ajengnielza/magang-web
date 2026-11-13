@@ -1,35 +1,43 @@
 
 import { useState } from "react";
-import type { Jurnal, StatusReview } from "../../types/jurnal";
+import type { Jurnal, ReviewJurnal } from "../../types/jurnal";
 import { formatTanggal } from "../../utils/format";
 import { adalahUrlHttp } from "../../utils/url";
 import Button from "../ui/Button";
+import FormReview from "./FormReview";
 import styles from "./JurnalCard.module.css";
 import StatusBadge from "./StatusBadge";
 
 interface JurnalCardProps {
   jurnal: Jurnal;
   onHapus?: (id: number) => void;
-  onUbahStatus?: (id: number, status: StatusReview) => void;
+  onReview?: (id: number, review: ReviewJurnal) => void;
 }
 
-export default function JurnalCard({ jurnal, onHapus, onUbahStatus }: JurnalCardProps) {
+export default function JurnalCard({
+  jurnal,
+  onHapus,
+  onReview,
+}: JurnalCardProps) {
+  // State lokal untuk detail, review, dan konfirmasi hapus
   const [terbuka, setTerbuka] = useState(false);
+  const [sedangReview, setSedangReview] = useState(false);
+  const [konfirmasiHapus, setKonfirmasiHapus] = useState(false);
 
   const jumlahLampiran = jurnal.lampiran?.length ?? 0;
+
   const link =
     jurnal.linkCommit !== null && adalahUrlHttp(jurnal.linkCommit)
       ? jurnal.linkCommit
       : null;
 
-  // Data turunan, bukan state.
+  // Data turunan, bukan state
   const adaDetail =
     Boolean(jurnal.hambatan) ||
     Boolean(jurnal.catatanMentor) ||
     jumlahLampiran > 0 ||
     link !== null;
 
-  // Panel hanya ditampilkan jika masih ada detail.
   const detailTampil = terbuka && adaDetail;
 
   return (
@@ -38,6 +46,7 @@ export default function JurnalCard({ jurnal, onHapus, onUbahStatus }: JurnalCard
         <time dateTime={jurnal.createdAt}>
           {formatTanggal(jurnal.createdAt)}
         </time>
+
         <StatusBadge status={jurnal.statusReview} />
       </div>
 
@@ -55,40 +64,76 @@ export default function JurnalCard({ jurnal, onHapus, onUbahStatus }: JurnalCard
           </Button>
         )}
 
-        {onUbahStatus && jurnal.statusReview !== "disetujui" && (
+        {onReview && (
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => onUbahStatus(jurnal.id, "disetujui")}
+            aria-expanded={sedangReview}
+            onClick={() => setSedangReview((s) => !s)}
           >
-            Tandai disetujui
+            {sedangReview ? "Tutup review" : "Review"}
           </Button>
         )}
 
-        {onUbahStatus && jurnal.statusReview !== "belum" && (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => onUbahStatus(jurnal.id, "belum")}
-          >
-            Kembalikan ke belum
-          </Button>
-        )}
-
-        {onHapus && (
+        {onHapus && !konfirmasiHapus && (
           <Button
             variant="danger"
             size="sm"
-            onClick={() => onHapus(jurnal.id)}
+            onClick={() => setKonfirmasiHapus(true)}
           >
             Hapus
           </Button>
         )}
       </div>
 
+      {/* Konfirmasi hapus dua langkah */}
+      {onHapus && konfirmasiHapus && (
+        <div
+          className={styles.konfirmasi}
+          role="group"
+          aria-label="Konfirmasi hapus jurnal"
+        >
+          <span>Yakin menghapus jurnal ini?</span>
+
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={() => onHapus(jurnal.id)}
+          >
+            Ya, hapus
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="sm"
+            autoFocus
+            onClick={() => setKonfirmasiHapus(false)}
+          >
+            Batal
+          </Button>
+        </div>
+      )}
+
+      {/* Form review mentor */}
+      {sedangReview && onReview && (
+        <FormReview
+          awal={{
+            statusReview: jurnal.statusReview,
+            catatan: jurnal.catatanMentor ?? "",
+          }}
+          onSimpan={(review) => {
+            onReview(jurnal.id, review);
+            setSedangReview(false);
+          }}
+          onBatal={() => setSedangReview(false)}
+        />
+      )}
+
+      {/* Detail jurnal */}
       {detailTampil && (
         <div className={styles.detail}>
           {jurnal.hambatan && <p>Hambatan: {jurnal.hambatan}</p>}
+
           {jurnal.catatanMentor && (
             <p>Catatan mentor: {jurnal.catatanMentor}</p>
           )}
@@ -98,7 +143,9 @@ export default function JurnalCard({ jurnal, onHapus, onUbahStatus }: JurnalCard
               {jumlahLampiran > 0 && (
                 <span>Lampiran ({jumlahLampiran})</span>
               )}
+
               {jumlahLampiran > 0 && link !== null && " · "}
+
               {link !== null && (
                 <a href={link} target="_blank" rel="noreferrer">
                   Lihat commit

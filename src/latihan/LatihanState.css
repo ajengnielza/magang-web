@@ -1,0 +1,171 @@
+
+.demo-key {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.demo-key-description {
+  margin: 0;
+  color: #788197;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.demo-key-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.demo-key-row {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e8eaf1;
+  border-radius: 10px;
+  background: #f8f9fc;
+}
+
+.demo-key-name {
+  color: #26324b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.demo-key-row input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #dce1eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #26324b;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.demo-key-row input:focus {
+  border-color: #6258db;
+  box-shadow: 0 0 0 3px rgb(98 88 219 / 12%);
+}
+
+.demo-key-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.demo-key-actions button {
+  margin: 0;
+}
+
+@media (max-width: 420px) {
+  .demo-key-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* =========================
+   BUG KEY INDEKS
+========================= */
+
+.demo-key {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.demo-key-description {
+  margin: 0;
+  color: #788197;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.demo-key-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.demo-key-row {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e8eaf1;
+  border-radius: 10px;
+  background: #f8f9fc;
+}
+
+.demo-key-name {
+  color: #26324b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.demo-key-row input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #dce1eb;
+  border-radius: 8px;
+  background: white;
+  font-size: 13px;
+  outline: none;
+}
+
+.demo-key-row input:focus {
+  border-color: #6258db;
+  box-shadow: 0 0 0 3px rgb(98 88 219 / 12%);
+}
+
+.demo-key-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.demo-key-actions button {
+  margin: 0;
+}
+
+@media (max-width: 420px) {
+  .demo-key-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* Memberi jarak antarbutton */
+.latihan-grid button {
+  margin: 6px 8px 6px 0;
+}
+
+/* Jika button berada dalam satu kelompok */
+.latihan-grid .demo-actions,
+.latihan-grid .penghitung-actions,
+.latihan-grid .tipe-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+/* Menghilangkan margin tambahan karena sudah memakai gap */
+.latihan-grid .demo-actions button,
+.latihan-grid .penghitung-actions button,
+.latihan-grid .tipe-state-actions button {
+  margin: 0;
+}

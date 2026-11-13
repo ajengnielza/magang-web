@@ -11,18 +11,23 @@ import FilterStatusJurnal from "../components/jurnal/FilterStatusJurnal";
 import PencarianJurnal from "../components/jurnal/PencarianJurnal";
 import { jurnalTiruan } from "../data/jurnalTiruan";
 import { pesertaTiruan } from "../data/pesertaTiruan";
-import type { Jurnal, JurnalBaru, StatusReview, FilterStatus,
+import type {
+  Jurnal,
+  JurnalBaru,
+  FilterStatus,
+  ReviewJurnal,
 } from "../types/jurnal";
 import styles from "./DaftarJurnalPage.module.css";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { adalahDaftarJurnal } from "../utils/guard";
 
 export default function DaftarJurnalPage() {
-const [jurnal, setJurnal] = useLocalStorage<Jurnal[]>(
-  "jurnal-magang-v1",
-  jurnalTiruan,
-  adalahDaftarJurnal
-);
+  const [jurnal, setJurnal] = useLocalStorage<Jurnal[]>(
+    "jurnal-magang-v1",
+    jurnalTiruan,
+    adalahDaftarJurnal
+  );
+
   const [filter, setFilter] = useState<FilterStatus>("semua");
   const [kataKunci, setKataKunci] = useState("");
 
@@ -34,24 +39,27 @@ const [jurnal, setJurnal] = useLocalStorage<Jurnal[]>(
   const tampil = jurnal
     .filter((j) => filter === "semua" || j.statusReview === filter)
     .filter((j) => j.kegiatan.toLowerCase().includes(kataCari));
-  
+
   // JUDUL TAB DINAMIS
-useEffect(() => {
-  document.title = `Jurnal Magang (${jurnal.length})`;
-}, [jurnal.length]);
+  useEffect(() => {
+    document.title = `Jurnal Magang (${jurnal.length})`;
+  }, [jurnal.length]);
+
   function hapusJurnal(id: number) {
     setJurnal((daftar) => daftar.filter((j) => j.id !== id));
   }
 
-  function ubahStatus(id: number, status: StatusReview) {
+  function ubahReview(id: number, review: ReviewJurnal) {
     setJurnal((daftar) =>
       daftar.map((j) =>
         j.id === id
           ? {
               ...j,
-              statusReview: status,
+              statusReview: review.statusReview,
               catatanMentor:
-                status === "belum" ? null : j.catatanMentor,
+                review.statusReview === "belum"
+                  ? null
+                  : review.catatan,
             }
           : j
       )
@@ -118,7 +126,7 @@ useEffect(() => {
           <DaftarJurnal
             jurnal={tampil}
             onHapus={hapusJurnal}
-            onUbahStatus={ubahStatus}
+            onReview={ubahReview}
           />
         )}
       </main>

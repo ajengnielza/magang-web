@@ -3,6 +3,10 @@ export interface Lampiran {
   keterangan?: string;
 }
 export type StatusReview = "belum" | "disetujui" | "revisi";
+export interface ReviewJurnal {
+  statusReview: StatusReview;
+  catatan: string;
+}
 export type FilterStatus = "semua" | StatusReview;
 
 export interface Jurnal {

@@ -49,4 +49,6 @@ export function adalahJurnal(x: unknown): x is Jurnal {
 }
 
 export const adalahDaftarJurnal = (x: unknown): x is Jurnal[] =>
-  Array.isArray(x) && x.every(adalahJurnal);
+  Array.isArray(x) &&
+  x.every(adalahJurnal) &&
+  new Set(x.map((j) => j.id)).size === x.length;

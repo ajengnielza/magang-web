@@ -87,3 +87,4 @@ export const jurnalTiruan: Jurnal[] = [
   createdAt: "2026-10-31T09:20:00.000Z",
 },
 ];
+

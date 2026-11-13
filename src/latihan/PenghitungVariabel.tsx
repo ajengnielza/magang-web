@@ -1,14 +1,16 @@
+import { useState } from "react";
+
 export default function PenghitungVariabel() {
-  let jumlah = 0;
+  const [jumlah, setJumlah] = useState(0);
 
   function tambah() {
-    jumlah = jumlah + 1;
-    console.log("jumlah sekarang:", jumlah);
+    setJumlah((nilaiSebelumnya) => nilaiSebelumnya + 1);
   }
 
   return (
-    <button type="button" onClick={tambah}>
-      Jumlah: {jumlah}
-    </button>
+    <div>
+      <p>Jumlah sekarang: {jumlah}</p>
+      <button onClick={tambah}>Tambah</button>
+    </div>
   );
 }
