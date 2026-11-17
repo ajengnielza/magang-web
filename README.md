@@ -215,3 +215,17 @@ const jurnalTerurut = [...jurnal].sort(
 - **Effect:** digunakan untuk menyinkronkan React dengan sistem di luar React, seperti `localStorage` dan `document.title`.
 
 Penggunaan `[...jurnal]` sebelum `sort()` diperlukan agar pengurutan tidak mengubah array state asli.
+
+### Refleksi CORS
+
+Origin merupakan gabungan dari skema, host, dan port sehingga `localhost:5173` dan `localhost:3000` termasuk dua origin yang berbeda. Browser menerapkan kebijakan CORS untuk membatasi JavaScript dalam membaca respons dari origin lain yang tidak memberikan izin. Konfigurasi CORS dilakukan pada backend melalui variabel `CORS_ORIGINS`. Dari percobaan ini, saya memahami bahwa permintaan tetap dapat sampai ke backend dan mendapatkan respons HTTP 200, tetapi browser tidak mengizinkan JavaScript membaca respons tersebut. Berbeda dengan browser, `curl` tetap dapat menerima respons karena tidak menerapkan kebijakan CORS.
+### Refleksi preflight
+Pada pengujian preflight, browser mengirim permintaan OPTIONS dengan status 204 sebelum mengirim GET `/me`. Preflight diperlukan karena permintaan menggunakan header Authorization. Setelah server memberikan izin CORS, browser melanjutkan permintaan GET dan menerima status 401 karena token yang digunakan tidak valid. Header `X-Request-Id` belum dapat dibaca JavaScript karena backend belum mengatur `Access-Control-Expose-Headers`.
+
+## Refleksi Minggu 19: Proxy Vite dan nginx
+
+Proxy Vite digunakan saat proses pengembangan, sedangkan nginx digunakan ketika aplikasi sudah berada di lingkungan produksi. Keduanya memiliki fungsi yang sama, yaitu meneruskan permintaan API yang menggunakan awalan `/api` ke server backend.
+
+Dengan menggunakan alamat relatif seperti `/api/v1/me`, frontend tidak perlu mengetahui alamat backend secara langsung. Browser juga menganggap permintaan tersebut berasal dari origin yang sama karena diteruskan melalui proxy atau nginx. Hal ini membantu menghindari masalah CORS.
+
+Dengan demikian, penggunaan proxy Vite dan nginx dapat saling menggantikan tanpa perlu mengubah kode frontend, selama frontend tetap menggunakan alamat API relatif dan konfigurasi penerusannya sesuai.
