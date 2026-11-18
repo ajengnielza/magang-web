@@ -1,6 +1,7 @@
 
 import { useState } from "react";
-import type { Jurnal, ReviewJurnal } from "../../types/jurnal";
+import type { ReviewJurnal } from "../../types/jurnal";
+import type { Jurnal } from "../../api/types";
 import { formatTanggal } from "../../utils/format";
 import { adalahUrlHttp } from "../../utils/url";
 import Button from "../ui/Button";

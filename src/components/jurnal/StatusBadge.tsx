@@ -1,4 +1,4 @@
-import type { StatusReview } from "../../types/jurnal";
+import type { StatusReview } from "../../api/types";
 import Badge, { type BadgeVariasi } from "../ui/Badge";
 
 const TAMPILAN: Record<

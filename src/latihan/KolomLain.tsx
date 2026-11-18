@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import type { StatusReview } from "../types/jurnal";
+import type { StatusReview } from "../api/types";
 
 type FilterStatus = "semua" | StatusReview;
 

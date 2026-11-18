@@ -9,7 +9,7 @@ import Button, {
 import Kartu from "../components/ui/Kartu";
 import StatusBadge from "../components/jurnal/StatusBadge";
 import styles from "./GaleriKomponen.module.css";
-import type { StatusReview } from "../types/jurnal";
+import type { StatusReview } from "../api/types";
 import JurnalCard from "../components/jurnal/JurnalCard";
 import { jurnalTiruan } from "../data/jurnalTiruan";
 

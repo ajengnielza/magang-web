@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "api:types": "openapi-typescript http://localhost:3000/api/docs.json -o src/api/schema.d.ts"
+    "api:types": "openapi-typescript http://localhost:3000/api/docs.json -o src/api/schema.d.ts",
+    "api:types:check": "npm run api:types && git diff --exit-code src/api/schema.d.ts"
   },
   "dependencies": {
     "react": "^19.3.1",

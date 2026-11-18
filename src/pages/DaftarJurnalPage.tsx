@@ -11,12 +11,8 @@ import FilterStatusJurnal from "../components/jurnal/FilterStatusJurnal";
 import PencarianJurnal from "../components/jurnal/PencarianJurnal";
 import { jurnalTiruan } from "../data/jurnalTiruan";
 import { pesertaTiruan } from "../data/pesertaTiruan";
-import type {
-  Jurnal,
-  JurnalBaru,
-  FilterStatus,
-  ReviewJurnal,
-} from "../types/jurnal";
+import type { Jurnal, JurnalBaru} from "../api/types";
+import type { FilterStatus,ReviewJurnal } from "../types/jurnal";
 import styles from "./DaftarJurnalPage.module.css";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { adalahDaftarJurnal } from "../utils/guard";
@@ -66,20 +62,24 @@ export default function DaftarJurnalPage() {
     );
   }
 
-  function tambahJurnal(data: JurnalBaru) {
-    const baru: Jurnal = {
-      id: Math.max(0, ...jurnal.map((j) => j.id)) + 1,
-      pesertaId: pemilik.id,
-      reviewerId: null,
-      ...data,
-      lampiran: null,
-      statusReview: "belum",
-      catatanMentor: null,
-      createdAt: new Date().toISOString(),
-    };
+  
+function tambahJurnal(data: JurnalBaru) {
+  const baru: Jurnal = {
+    id: Math.max(0, ...jurnal.map((j) => j.id)) + 1,
+    pesertaId: pemilik.id,
+    reviewerId: null,
+    kegiatan: data.kegiatan,
+    hambatan: data.hambatan ?? null,
+    linkCommit: data.linkCommit ?? null,
+    lampiran: data.lampiran ?? null,
+    statusReview: "belum",
+    catatanMentor: null,
+    createdAt: new Date().toISOString(),
+  };
 
-    setJurnal((daftar) => [baru, ...daftar]);
-  }
+  setJurnal((daftar) => [baru, ...daftar]);
+}
+
 
   return (
     <>

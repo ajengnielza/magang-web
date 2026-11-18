@@ -1,28 +1,10 @@
-export interface Lampiran {
-  url: string;
-  keterangan?: string;
-}
-export type StatusReview = "belum" | "disetujui" | "revisi";
-export interface ReviewJurnal {
-  statusReview: StatusReview;
-  catatan: string;
-}
+
+import type { StatusReview } from "../api/types";
+
+// Tipe khusus UI. Bentuk data dari server ada di src/api/types.ts
 export type FilterStatus = "semua" | StatusReview;
 
-export interface Jurnal {
-  id: number;
-  pesertaId: number;
-  reviewerId: number | null;
-  kegiatan: string;
-  hambatan: string | null;
-  linkCommit: string | null;
+export interface ReviewJurnal {
   statusReview: StatusReview;
-  catatanMentor: string | null;
-  lampiran: Lampiran[] | null;
-  createdAt: string; // ISO dari JSON, bukan Date
+  catatan: string | null;
 }
-
-export type JurnalBaru = Pick<
-  Jurnal,
-  "kegiatan" | "hambatan" | "linkCommit"
->;

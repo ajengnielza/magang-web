@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "../components/ui/Button";
 import { jurnalTiruan } from "../data/jurnalTiruan";
-import type { Jurnal, StatusReview } from "../types/jurnal";
+import type { Jurnal, StatusReview } from "../api/types";
 
 export default function TipeState() {
   const [nama, setNama] = useState("");                                   // diinfer: string

@@ -1,4 +1,4 @@
-import type { Jurnal } from "../types/jurnal";
+import type { Jurnal } from "../api/types";
 import DaftarJurnal from "./jurnal/DaftarJurnal";
 
 type HasilJurnalProps =

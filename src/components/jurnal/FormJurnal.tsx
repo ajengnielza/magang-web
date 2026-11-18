@@ -1,7 +1,7 @@
 
 import { useRef, useState } from "react";
 import type { ChangeEventHandler, FormEventHandler } from "react";
-import type { JurnalBaru } from "../../types/jurnal";
+import type { JurnalBaru } from "../../api/types";
 import { adalahKunci } from "../../utils/form";
 import { validasiFormJurnal } from "../../utils/validasiJurnal";
 import type {
@@ -70,10 +70,10 @@ export default function FormJurnal({ onTambah }: FormJurnalProps) {
     }
 
     onTambah({
-      kegiatan: nilai.kegiatan.trim(),
-      hambatan: nilai.hambatan.trim() || null,
-      linkCommit: nilai.linkCommit.trim() || null,
-    });
+    kegiatan: nilai.kegiatan.trim(),
+    hambatan: nilai.hambatan.trim() || undefined,
+    linkCommit: nilai.linkCommit.trim() || undefined,
+  });
 
     setNilai(NILAI_AWAL);
   };

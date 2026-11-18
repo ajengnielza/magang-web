@@ -229,3 +229,19 @@ Proxy Vite digunakan saat proses pengembangan, sedangkan nginx digunakan ketika 
 Dengan menggunakan alamat relatif seperti `/api/v1/me`, frontend tidak perlu mengetahui alamat backend secara langsung. Browser juga menganggap permintaan tersebut berasal dari origin yang sama karena diteruskan melalui proxy atau nginx. Hal ini membantu menghindari masalah CORS.
 
 Dengan demikian, penggunaan proxy Vite dan nginx dapat saling menggantikan tanpa perlu mengubah kode frontend, selama frontend tetap menggunakan alamat API relatif dan konfigurasi penerusannya sesuai.
+
+## Refleksi Minggu 19: Dokumen yang Longgar Menghasilkan Tipe yang Longgar
+
+Pada proyek ini, tipe TypeScript di frontend dihasilkan berdasarkan dokumentasi OpenAPI dari backend. Oleh karena itu, ketepatan tipe yang dihasilkan bergantung pada kelengkapan dokumentasi tersebut.
+
+Saya mempelajari bahwa properti yang tidak dicantumkan dalam bagian `required` akan dianggap opsional. Akibatnya, tipe yang dihasilkan dapat memiliki tanda `?`, sehingga penggunaannya perlu memperhatikan kemungkinan nilai `undefined`.
+
+Untuk mengatasi hal tersebut, saya memperbaiki dokumentasi OpenAPI di backend dengan menentukan properti mana saja yang wajib tersedia. Dengan begitu, tipe yang dihasilkan di frontend menjadi lebih sesuai dengan struktur data API.
+
+Hal ini berkaitan dengan materi Minggu 16, yaitu dokumentasi API bukan hanya sebagai panduan penggunaan, tetapi juga menjadi sumber pembentukan tipe data bagi frontend.
+
+### Penerapan Pemeriksaan Sinkronisasi Tipe API
+
+Pemeriksaan sinkronisasi tipe API lebih cocok diterapkan melalui GitHub Actions (CI) dibandingkan pre-commit. Hal ini karena pre-commit mengharuskan backend selalu berjalan di komputer developer setiap kali melakukan commit.
+
+Pada CI, pemeriksaan dapat dijalankan secara otomatis ketika ada push ke repository. Namun, CI tidak dapat langsung mengakses alamat `localhost` milik komputer developer. Oleh karena itu, dokumentasi OpenAPI perlu disediakan sebagai file `docs/openapi.json` yang dapat diakses oleh workflow CI.

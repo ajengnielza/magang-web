@@ -1,4 +1,4 @@
-import type { Jurnal } from "../types/jurnal";
+import type { Jurnal } from "../api/types";
 
 export const jurnalTiruan: Jurnal[] = [
   {

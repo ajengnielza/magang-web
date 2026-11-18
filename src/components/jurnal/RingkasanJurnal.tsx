@@ -1,4 +1,4 @@
-import type { Jurnal } from "../../types/jurnal";
+import type { Jurnal } from "../../api/types";
 import styles from "./RingkasanJurnal.module.css";
 
 interface RingkasanJurnalProps {

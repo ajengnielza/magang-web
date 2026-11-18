@@ -1,7 +1,8 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
-import type { ReviewJurnal, StatusReview } from "../../types/jurnal";
+import type { ReviewJurnal} from "../../types/jurnal";
+import type { StatusReview} from "../../api/types";
 import Button from "../ui/Button";
 import styles from "./FormReview.module.css";
 
@@ -27,7 +28,7 @@ export default function FormReview({
   const [statusReview, setStatusReview] = useState<StatusReview>(
     awal.statusReview
   );
-  const [catatan, setCatatan] = useState(awal.catatan);
+  const [catatan, setCatatan] = useState(awal.catatan ?? "");
   const [error, setError] = useState("");
 
   const perluCatatan = statusReview !== "belum";

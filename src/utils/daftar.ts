@@ -1,5 +1,5 @@
 
-import type { Peserta } from "../types/peserta";
+import type { Peserta } from "../api/types";
 
 export function tambahPeserta(
   daftar: readonly Peserta[],
