@@ -1048,61 +1048,67 @@ export interface components {
     schemas: {
         PaginationMeta: {
             /** @example 1 */
-            page?: number;
+            page: number;
             /** @example 10 */
-            limit?: number;
+            limit: number;
             /** @example 42 */
-            total?: number;
+            total: number;
             /** @example 5 */
-            totalPages?: number;
+            totalPages: number;
             /** @example true */
-            hasNext?: boolean;
+            hasNext: boolean;
             /** @example false */
-            hasPrev?: boolean;
+            hasPrev: boolean;
         };
         FieldError: {
             /**
              * @description Nama field; notasi titik untuk objek bersarang (lampiran.1.url)
              * @example email
              */
-            field?: string;
+            field: string;
             /** @example Format email tidak valid */
-            pesan?: string;
+            pesan: string;
         };
         ErrorResponse: {
             /** @example false */
-            sukses?: boolean;
-            error?: {
+            sukses: boolean;
+            error: {
                 /** @enum {string} */
                 kode: "VALIDATION_ERROR" | "INVALID_JSON" | "UNAUTHORIZED" | "TOKEN_EXPIRED" | "INVALID_TOKEN" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "RATE_LIMITED" | "INTERNAL_ERROR" | "PAYLOAD_TOO_LARGE";
                 pesan: string;
                 detail?: components["schemas"]["FieldError"][];
+                /** @description Informasi tambahan yang hanya tersedia di development */
+                debug?: {
+                    [key: string]: unknown;
+                };
             };
             /** Format: uuid */
-            requestId?: string;
+            requestId: string;
         };
         Peserta: {
             /** @example 1 */
-            readonly id?: number;
+            readonly id: number;
             /** @example Budi Santoso */
-            nama?: string;
+            nama: string;
             /** @example SMK 5 Malang */
-            sekolah?: string;
+            sekolah: string;
             /**
              * Format: email
              * @example budi@mail.com
              */
-            email?: string;
+            email: string;
             /** @example 1 */
-            fase?: number;
+            fase: number;
             /** @enum {string} */
-            status?: "aktif" | "lulus" | "berhenti";
+            status: "aktif" | "lulus" | "berhenti";
             /** @enum {string} */
-            role?: "peserta" | "mentor";
+            role: "peserta" | "mentor";
             /** @example 081234567890 */
-            telepon?: string | null;
+            telepon: string | null;
             /** Format: date-time */
-            readonly createdAt?: string;
+            readonly createdAt: string;
+            /** Format: date-time */
+            readonly updatedAt: string;
         };
         RegisterRequest: {
             nama: string;
@@ -1150,40 +1156,40 @@ export interface components {
         };
         Jurnal: {
             /** @example 12 */
-            id?: number;
+            id: number;
             /** @example 3 */
-            pesertaId?: number;
+            pesertaId: number;
             /** @description Id mentor yang me-review, null jika belum */
-            reviewerId?: number | null;
+            reviewerId: number | null;
             /** @example Belajar unit testing dengan Jest dan Supertest */
-            kegiatan?: string;
-            hambatan?: string | null;
-            linkCommit?: string | null;
+            kegiatan: string;
+            hambatan: string | null;
+            linkCommit: string | null;
             /**
              * @example belum
              * @enum {string}
              */
-            statusReview?: "belum" | "disetujui" | "revisi";
+            statusReview: "belum" | "disetujui" | "revisi";
             /** @description Terisi saat status disetujui atau revisi */
-            catatanMentor?: string | null;
-            lampiran?: components["schemas"]["Lampiran"][] | null;
+            catatanMentor: string | null;
+            lampiran: components["schemas"]["Lampiran"][] | null;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
         };
         JurnalResponse: {
             /** @example true */
-            sukses?: boolean;
+            sukses: boolean;
             /** @example Berhasil */
-            pesan?: string;
-            data?: components["schemas"]["Jurnal"];
+            pesan: string;
+            data: components["schemas"]["Jurnal"];
         };
         JurnalListResponse: {
             /** @example true */
-            sukses?: boolean;
+            sukses: boolean;
             /** @example Berhasil */
-            pesan?: string;
-            data?: components["schemas"]["Jurnal"][];
-            meta?: components["schemas"]["PaginationMeta"];
+            pesan: string;
+            data: components["schemas"]["Jurnal"][];
+            meta: components["schemas"]["PaginationMeta"];
         };
         /** @description pesertaId TIDAK dikirim lewat body: diambil dari token. Mengirimnya menghasilkan 422. */
         CreateJurnalRequest: {
@@ -1213,25 +1219,25 @@ export interface components {
         };
         PesertaResponse: {
             /** @example true */
-            sukses?: boolean;
+            sukses: boolean;
             /** @example Berhasil */
-            pesan?: string;
-            data?: components["schemas"]["Peserta"];
+            pesan: string;
+            data: components["schemas"]["Peserta"];
         };
         PesertaListResponse: {
             /** @example true */
-            sukses?: boolean;
+            sukses: boolean;
             /** @example Berhasil */
-            pesan?: string;
-            data?: components["schemas"]["Peserta"][];
-            meta?: components["schemas"]["PaginationMeta"];
+            pesan: string;
+            data: components["schemas"]["Peserta"][];
+            meta: components["schemas"]["PaginationMeta"];
         };
         LoginResponse: {
             /** @example true */
-            sukses?: boolean;
+            sukses: boolean;
             /** @example Berhasil */
-            pesan?: string;
-            data?: {
+            pesan: string;
+            data: {
                 /** @description Berlaku 15 menit */
                 accessToken?: string;
                 /** @description Berlaku 7 hari, tukarkan di /auth/refresh */
