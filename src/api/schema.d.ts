@@ -422,7 +422,14 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": {
+                            sukses: boolean;
+                            pesan: string;
+                            total: number;
+                            data: components["schemas"]["Jurnal"][];
+                        };
+                    };
                 };
                 401: components["responses"]["Unauthorized"];
             };
@@ -1238,11 +1245,9 @@ export interface components {
             /** @example Berhasil */
             pesan: string;
             data: {
-                /** @description Berlaku 15 menit */
-                accessToken?: string;
-                /** @description Berlaku 7 hari, tukarkan di /auth/refresh */
-                refreshToken?: string;
-                peserta?: components["schemas"]["Peserta"];
+                accessToken: string;
+                refreshToken: string;
+                peserta: components["schemas"]["Peserta"];
             };
         };
     };

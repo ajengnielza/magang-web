@@ -245,3 +245,27 @@ Hal ini berkaitan dengan materi Minggu 16, yaitu dokumentasi API bukan hanya seb
 Pemeriksaan sinkronisasi tipe API lebih cocok diterapkan melalui GitHub Actions (CI) dibandingkan pre-commit. Hal ini karena pre-commit mengharuskan backend selalu berjalan di komputer developer setiap kali melakukan commit.
 
 Pada CI, pemeriksaan dapat dijalankan secara otomatis ketika ada push ke repository. Namun, CI tidak dapat langsung mengakses alamat `localhost` milik komputer developer. Oleh karena itu, dokumentasi OpenAPI perlu disediakan sebagai file `docs/openapi.json` yang dapat diakses oleh workflow CI.
+
+## Catatan Minggu 19: Kenapa Properti ApiError Ditulis Eksplisit
+
+Parameter property seperti `constructor(public status: number)` menghasilkan kode runtime, bukan sekadar tipe. Template Vite mengaktifkan `erasableSyntaxOnly`, yang hanya mengizinkan sintaks yang bisa dihapus begitu saja saat tipe dibuang. Karena itu, properti dideklarasikan sebagai field biasa dan diisi di dalam constructor.
+
+
+## Peta Kode Error ke Perilaku Aplikasi
+
+Tabel berikut merupakan usulan awal perilaku aplikasi berdasarkan kode error API. Implementasinya akan disesuaikan dengan rencana pengerjaan minggu berikutnya.
+
+| Kode | Perilaku aplikasi | Dibangun di |
+|---|---|---|
+| `NETWORK_ERROR` | Pesan koneksi dan tombol "Coba lagi" | Kamis |
+| `BAD_RESPONSE` | Pesan "jawaban tidak dikenali" plus kode laporan | Kamis |
+| `INTERNAL_ERROR` | Pesan umum plus kode laporan | Kamis |
+| `NOT_FOUND` | Pesan "data tidak ditemukan" | Kamis |
+| `UNAUTHORIZED` (layar login) | Pesan "Email atau password salah" | Jumat atau Minggu 20 |
+| `UNAUTHORIZED`, `TOKEN_EXPIRED` | Segarkan token, atau arahkan ke login | Minggu 20 |
+| `INVALID_TOKEN` | Keluar paksa dan arahkan ke login | Minggu 20 |
+| `FORBIDDEN` | Sembunyikan aksi, atau tampilkan "tidak punya akses" | Minggu 20 |
+| `VALIDATION_ERROR` | Pesan di kolom form yang tepat (`detail`) | Jumat |
+| `CONFLICT` | Pesan di kolom atau notifikasi | Jumat atau Minggu 21 |
+| `RATE_LIMITED` | Pesan menunggu dan tombol dinonaktifkan sementara | Jumat |
+| `INVALID_JSON`, `PAYLOAD_TOO_LARGE` | Pesan umum (ini bug frontend, bukan salah pengguna) | Jumat |

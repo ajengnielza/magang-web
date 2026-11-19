@@ -1,5 +1,5 @@
 
-import type { components } from "./schema";
+import type { components, paths } from "./schema";
 
 type Skema = components["schemas"];
 
@@ -14,3 +14,6 @@ export type ErrorResponse = Skema["ErrorResponse"];
 export type LoginResponse = Skema["LoginResponse"];
 export type JurnalResponse = Skema["JurnalResponse"];
 export type JurnalListResponse = Skema["JurnalListResponse"];
+export type LoginRequest = Skema["LoginRequest"];
+export type JurnalSayaResponse =
+  paths["/me/jurnal"]["get"]["responses"]["200"]["content"]["application/json"];
