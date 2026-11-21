@@ -269,3 +269,15 @@ Tabel berikut merupakan usulan awal perilaku aplikasi berdasarkan kode error API
 | `CONFLICT` | Pesan di kolom atau notifikasi | Jumat atau Minggu 21 |
 | `RATE_LIMITED` | Pesan menunggu dan tombol dinonaktifkan sementara | Jumat |
 | `INVALID_JSON`, `PAYLOAD_TOO_LARGE` | Pesan umum (ini bug frontend, bukan salah pengguna) | Jumat |
+
+## Refleksi Minggu 19: Mengambil Data di useEffect
+
+Selama mengembangkan fitur pengambilan data jurnal, saya mempelajari beberapa masalah yang tidak ditemukan pada penggunaan data statis.
+
+Pertama, saya mempelajari *race condition*, yaitu kondisi ketika respons permintaan lama datang lebih lambat dan menimpa data terbaru. Masalah ini dicegah menggunakan `AbortController` dan pencocokan kunci permintaan.
+
+Kedua, saya mempelajari pengelolaan status memuat, gagal, dan berhasil menggunakan *discriminated union* agar setiap keadaan memiliki penanganan yang jelas, termasuk ketika data berhasil dimuat tetapi masih kosong.
+
+Ketiga, saya mempelajari bahwa pembatalan request tidak boleh dianggap sebagai kegagalan yang perlu ditampilkan kepada pengguna.
+
+Untuk pengelolaan data server yang lebih terstruktur, saya akan mempelajari TanStack Query pada Minggu 21.
