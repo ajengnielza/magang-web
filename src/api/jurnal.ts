@@ -1,9 +1,9 @@
+
 import { request } from "./client";
 import type {
   JurnalBaru,
   JurnalListResponse,
   JurnalResponse,
-  JurnalSayaResponse,
 } from "./types";
 
 interface OpsiDaftar {
@@ -29,17 +29,20 @@ export async function ambilSemuaJurnal({
   };
 }
 
-// Mengambil jurnal milik peserta yang sedang login
+// Mengambil jurnal milik peserta yang sedang login dengan pagination
 export async function ambilJurnalSaya({
+  halaman,
+  batas = 5,
   signal,
-}: { signal?: AbortSignal } = {}) {
-  const body = await request<JurnalSayaResponse>("GET", "/me/jurnal", {
+}: OpsiDaftar = {}) {
+  const body = await request<JurnalListResponse>("GET", "/me/jurnal", {
+    query: { page: halaman, limit: batas },
     signal,
   });
 
   return {
     daftar: body.data,
-    total: body.total,
+    meta: body.meta,
   };
 }
 

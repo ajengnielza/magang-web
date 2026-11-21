@@ -11,3 +11,7 @@ export async function login(email: string, password: string) {
 
   return body.data.peserta;
 }
+
+export function keluar(): void {
+  setAccessToken(null);
+}
