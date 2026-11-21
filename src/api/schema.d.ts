@@ -405,33 +405,38 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Melihat jurnal sendiri
-         * @description Mengambil daftar jurnal milik pengguna yang sedang login. Access token wajib disertakan.
+         * Daftar jurnal milik sendiri
+         * @description Berpagination. Identitas peserta diambil dari access token, bukan dari parameter query.
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Nomor halaman (mulai 1) */
+                    page?: components["parameters"]["Page"];
+                    /** @description Jumlah data per halaman */
+                    limit?: components["parameters"]["Limit"];
+                    /** @description Arah pengurutan */
+                    order?: components["parameters"]["Order"];
+                    sortBy?: "createdAt" | "statusReview";
+                    statusReview?: "belum" | "disetujui" | "revisi";
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Daftar jurnal berhasil diambil */
+                /** @description Jurnal milik pengguna yang sedang login */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            sukses: boolean;
-                            pesan: string;
-                            total: number;
-                            data: components["schemas"]["Jurnal"][];
-                        };
+                        "application/json": components["schemas"]["JurnalListResponse"];
                     };
                 };
                 401: components["responses"]["Unauthorized"];
+                422: components["responses"]["ValidationError"];
             };
         };
         put?: never;
