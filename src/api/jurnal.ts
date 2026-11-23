@@ -54,3 +54,7 @@ export async function buatJurnal(data: JurnalBaru) {
 
   return body.data;
 }
+
+export async function hapusJurnal(id: number) {
+  await request<void>("DELETE", `/jurnal/${id}`);
+}

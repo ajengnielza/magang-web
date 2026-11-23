@@ -1,135 +1,83 @@
 
-import { useState, useEffect } from "react";
-import DaftarJurnal from "../components/jurnal/DaftarJurnal";
-import RingkasanJurnal from "../components/jurnal/RingkasanJurnal";
-import Header from "../components/layout/Header";
-import Button from "../components/ui/Button";
-import Kartu from "../components/ui/Kartu";
+import { useState } from "react";
+import { buatJurnal } from "../api/jurnal";
+import type { JurnalBaru } from "../api/types";
+import { useJurnalSaya } from "../hooks/useJurnalSaya";
+import { kodeLaporan, pesanUntukPengguna } from "../api/pesan";
 import Alert from "../components/ui/Alert";
+import Button from "../components/ui/Button";
 import FormJurnal from "../components/jurnal/FormJurnal";
-import FilterStatusJurnal from "../components/jurnal/FilterStatusJurnal";
-import PencarianJurnal from "../components/jurnal/PencarianJurnal";
-import { jurnalTiruan } from "../data/jurnalTiruan";
-import { pesertaTiruan } from "../data/pesertaTiruan";
-import type { Jurnal, JurnalBaru} from "../api/types";
-import type { FilterStatus,ReviewJurnal } from "../types/jurnal";
-import styles from "./DaftarJurnalPage.module.css";
-import { useLocalStorage } from "../hooks/useLocalStorage";
-import { adalahDaftarJurnal } from "../utils/guard";
+import DaftarJurnal from "../components/jurnal/DaftarJurnal";
 
 export default function DaftarJurnalPage() {
-  const [jurnal, setJurnal] = useLocalStorage<Jurnal[]>(
-    "jurnal-magang-v1",
-    jurnalTiruan,
-    adalahDaftarJurnal
-  );
+  const [halaman, setHalaman] = useState(1);
+  const { hasil, muatUlang } = useJurnalSaya(halaman);
 
-  const [filter, setFilter] = useState<FilterStatus>("semua");
-  const [kataKunci, setKataKunci] = useState("");
-
-  const pemilik = pesertaTiruan[0];
-
-  // DATA TURUNAN: tidak disimpan sebagai state
-  const kataCari = kataKunci.trim().toLowerCase();
-
-  const tampil = jurnal
-    .filter((j) => filter === "semua" || j.statusReview === filter)
-    .filter((j) => j.kegiatan.toLowerCase().includes(kataCari));
-
-  // JUDUL TAB DINAMIS
-  useEffect(() => {
-    document.title = `Jurnal Magang (${jurnal.length})`;
-  }, [jurnal.length]);
-
-  function hapusJurnal(id: number) {
-    setJurnal((daftar) => daftar.filter((j) => j.id !== id));
+  async function tambahJurnal(data: JurnalBaru): Promise<void> {
+    await buatJurnal(data);
+    setHalaman(1);
+    muatUlang();
   }
 
-  function ubahReview(id: number, review: ReviewJurnal) {
-    setJurnal((daftar) =>
-      daftar.map((j) =>
-        j.id === id
-          ? {
-              ...j,
-              statusReview: review.statusReview,
-              catatanMentor:
-                review.statusReview === "belum"
-                  ? null
-                  : review.catatan,
-            }
-          : j
-      )
-    );
-  }
+  switch (hasil.status) {
+    case "memuat":
+      return <p role="status">Memuat jurnal...</p>;
 
-  
-function tambahJurnal(data: JurnalBaru) {
-  const baru: Jurnal = {
-    id: Math.max(0, ...jurnal.map((j) => j.id)) + 1,
-    pesertaId: pemilik.id,
-    reviewerId: null,
-    kegiatan: data.kegiatan,
-    hambatan: data.hambatan ?? null,
-    linkCommit: data.linkCommit ?? null,
-    lampiran: data.lampiran ?? null,
-    statusReview: "belum",
-    catatanMentor: null,
-    createdAt: new Date().toISOString(),
-  };
+    case "gagal": {
+      const laporan = kodeLaporan(hasil.error);
 
-  setJurnal((daftar) => [baru, ...daftar]);
-}
-
-
-  return (
-    <>
-      <Header judul="Jurnal Magang" namaPeserta={pemilik.nama} />
-
-      <main>
-        <Kartu judul="Ringkasan">
-          <RingkasanJurnal jurnal={jurnal} />
-        </Kartu>
-
-        <p>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setJurnal(jurnalTiruan)}
-          >
-            Pulihkan data contoh
+      return (
+        <Alert tipe="bahaya">
+          <p>{pesanUntukPengguna(hasil.error)}</p>
+          {laporan && <p>{laporan}</p>}
+          <Button size="sm" onClick={muatUlang}>
+            Coba lagi
           </Button>
-        </p>
+        </Alert>
+      );
+    }
 
-        <Kartu judul="Tambah jurnal">
+    case "berhasil": {
+      const { daftar, meta } = hasil.data;
+
+      return (
+        <main>
+          <h1>Jurnal saya</h1>
+
           <FormJurnal onTambah={tambahJurnal} />
-        </Kartu>
 
-        <Kartu judul="Filter">
-          <div className={styles.filter} role="search">
-            <FilterStatusJurnal
-              nilai={filter}
-              onUbah={setFilter}
-            />
+          {daftar.length === 0 ? (
+            <p>Belum ada jurnal. Tulis jurnal pertamamu!</p>
+          ) : (
+            <DaftarJurnal jurnal={daftar} />
+          )}
 
-            <PencarianJurnal
-              nilai={kataKunci}
-              onUbah={setKataKunci}
-            />
-          </div>
-        </Kartu>
+          <nav aria-label="Halaman jurnal">
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={!meta.hasPrev}
+              onClick={() => setHalaman((h) => h - 1)}
+            >
+              Sebelumnya
+            </Button>
 
-        {jurnal.length > 0 && tampil.length === 0 ? (
-          <Alert tipe="info">
-            Tidak ada jurnal yang cocok dengan filter.
-          </Alert>
-        ) : (
-          <DaftarJurnal
-            jurnal={tampil}
-            onHapus={hapusJurnal}
-            onReview={ubahReview}
-          />
-        )}
-      </main>
-    </>
-  );
+            <span>
+              {" "}
+              Halaman {meta.page} dari {meta.totalPages}{" "}
+            </span>
+
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={!meta.hasNext}
+              onClick={() => setHalaman((h) => h + 1)}
+            >
+              Berikutnya
+            </Button>
+          </nav>
+        </main>
+      );
+    }
+  }
 }

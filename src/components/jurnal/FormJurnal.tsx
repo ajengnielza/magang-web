@@ -2,7 +2,9 @@
 import { useRef, useState } from "react";
 import type { ChangeEventHandler, FormEventHandler } from "react";
 import type { JurnalBaru } from "../../api/types";
+import { ApiError, keApiError } from "../../api/errors";
 import { adalahKunci } from "../../utils/form";
+import { detailKeErrors } from "../../utils/detailError";
 import { validasiFormJurnal } from "../../utils/validasiJurnal";
 import type {
   FormJurnalErrors,
@@ -12,7 +14,7 @@ import Button from "../ui/Button";
 import styles from "./FormJurnal.module.css";
 
 interface FormJurnalProps {
-  onTambah: (data: JurnalBaru) => void;
+  onTambah: (data: JurnalBaru) => Promise<void>;
 }
 
 const NILAI_AWAL: FormJurnalState = {
@@ -24,16 +26,16 @@ const NILAI_AWAL: FormJurnalState = {
 export default function FormJurnal({ onTambah }: FormJurnalProps) {
   const [nilai, setNilai] = useState<FormJurnalState>(NILAI_AWAL);
   const [errors, setErrors] = useState<FormJurnalErrors>({});
+  const [errorUmum, setErrorUmum] = useState<string[]>([]);
+  const [menyimpan, setMenyimpan] = useState(false);
 
-  // Referensi untuk fokus otomatis ke kolom yang error
   const kegiatanRef = useRef<HTMLTextAreaElement>(null);
   const hambatanRef = useRef<HTMLTextAreaElement>(null);
   const linkRef = useRef<HTMLInputElement>(null);
 
-  // Fungsi untuk mengubah nilai input
-  const ubah: ChangeEventHandler<
-    HTMLInputElement | HTMLTextAreaElement
-  > = (e) => {
+  const ubah: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (
+    e
+  ) => {
     const { name, value } = e.target;
 
     if (!adalahKunci(NILAI_AWAL, name)) return;
@@ -47,35 +49,60 @@ export default function FormJurnal({ onTambah }: FormJurnalProps) {
       ...sebelumnya,
       [name]: undefined,
     }));
+
+    setErrorUmum([]);
   };
 
-  // Fungsi untuk mengirim form
-  const kirim: FormEventHandler<HTMLFormElement> = (e) => {
+  const kirim: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
+    // Validasi data di frontend.
     const hasil = validasiFormJurnal(nilai);
     setErrors(hasil);
+    setErrorUmum([]);
 
-    // Fokus otomatis ke kolom pertama yang memiliki error
     if (Object.keys(hasil).length > 0) {
-      if (hasil.kegiatan) {
-        kegiatanRef.current?.focus();
-      } else if (hasil.hambatan) {
-        hambatanRef.current?.focus();
-      } else if (hasil.linkCommit) {
-        linkRef.current?.focus();
-      }
-
+      if (hasil.kegiatan) kegiatanRef.current?.focus();
+      else if (hasil.hambatan) hambatanRef.current?.focus();
+      else if (hasil.linkCommit) linkRef.current?.focus();
       return;
     }
 
-    onTambah({
-    kegiatan: nilai.kegiatan.trim(),
-    hambatan: nilai.hambatan.trim() || undefined,
-    linkCommit: nilai.linkCommit.trim() || undefined,
-  });
+    setMenyimpan(true);
 
-    setNilai(NILAI_AWAL);
+    try {
+      await onTambah({
+        kegiatan: nilai.kegiatan.trim(),
+        hambatan: nilai.hambatan.trim() || undefined,
+        linkCommit: nilai.linkCommit.trim() || undefined,
+      });
+
+      // Kosongkan form hanya jika penyimpanan berhasil.
+      setNilai(NILAI_AWAL);
+      setErrors({});
+      setErrorUmum([]);
+    } catch (error: unknown) {
+      const apiError = keApiError(error);
+
+      if (apiError instanceof ApiError && apiError.status === 422) {
+        const hasilPemetaan = detailKeErrors(apiError.detail);
+
+        setErrors(hasilPemetaan.kolom);
+        setErrorUmum(hasilPemetaan.umum);
+
+        if (hasilPemetaan.kolom.kegiatan) {
+          kegiatanRef.current?.focus();
+        } else if (hasilPemetaan.kolom.hambatan) {
+          hambatanRef.current?.focus();
+        } else if (hasilPemetaan.kolom.linkCommit) {
+          linkRef.current?.focus();
+        }
+      } else {
+        setErrorUmum(["Jurnal gagal disimpan. Silakan coba lagi."]);
+      }
+    } finally {
+      setMenyimpan(false);
+    }
   };
 
   return (
@@ -84,7 +111,6 @@ export default function FormJurnal({ onTambah }: FormJurnalProps) {
         <label className={styles.label} htmlFor="kegiatan">
           Kegiatan hari ini
         </label>
-
         <textarea
           ref={kegiatanRef}
           id="kegiatan"
@@ -96,7 +122,6 @@ export default function FormJurnal({ onTambah }: FormJurnalProps) {
           aria-invalid={errors.kegiatan ? true : undefined}
           aria-describedby={errors.kegiatan ? "kegiatan-error" : undefined}
         />
-
         {errors.kegiatan && (
           <p id="kegiatan-error" role="alert" className={styles.error}>
             {errors.kegiatan}
@@ -108,7 +133,6 @@ export default function FormJurnal({ onTambah }: FormJurnalProps) {
         <label className={styles.label} htmlFor="hambatan">
           Hambatan (opsional)
         </label>
-
         <textarea
           ref={hambatanRef}
           id="hambatan"
@@ -120,7 +144,6 @@ export default function FormJurnal({ onTambah }: FormJurnalProps) {
           aria-invalid={errors.hambatan ? true : undefined}
           aria-describedby={errors.hambatan ? "hambatan-error" : undefined}
         />
-
         {errors.hambatan && (
           <p id="hambatan-error" role="alert" className={styles.error}>
             {errors.hambatan}
@@ -132,7 +155,6 @@ export default function FormJurnal({ onTambah }: FormJurnalProps) {
         <label className={styles.label} htmlFor="linkCommit">
           Link commit (opsional)
         </label>
-
         <input
           ref={linkRef}
           id="linkCommit"
@@ -143,7 +165,6 @@ export default function FormJurnal({ onTambah }: FormJurnalProps) {
           aria-invalid={errors.linkCommit ? true : undefined}
           aria-describedby={errors.linkCommit ? "linkCommit-error" : undefined}
         />
-
         {errors.linkCommit && (
           <p id="linkCommit-error" role="alert" className={styles.error}>
             {errors.linkCommit}
@@ -151,8 +172,18 @@ export default function FormJurnal({ onTambah }: FormJurnalProps) {
         )}
       </div>
 
+      {errorUmum.length > 0 && (
+        <div role="alert" className={styles.error}>
+          {errorUmum.map((pesan, index) => (
+            <p key={`${index}-${pesan}`}>{pesan}</p>
+          ))}
+        </div>
+      )}
+
       <div>
-        <Button type="submit">Simpan jurnal</Button>
+        <Button type="submit" disabled={menyimpan}>
+          {menyimpan ? "Menyimpan..." : "Simpan jurnal"}
+        </Button>
       </div>
     </form>
   );

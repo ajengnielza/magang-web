@@ -1,22 +1,22 @@
 # Magang-web
 
-Frontend untuk aplikasi API Magang yang digunakan untuk mengelola jurnal harian peserta magang. Proyek ini dikembangkan menggunakan React, TypeScript, dan Vite.
+Frontend aplikasi **API Magang** untuk mengelola jurnal harian peserta magang. Proyek ini dikembangkan menggunakan React, TypeScript, dan Vite, serta telah terintegrasi dengan REST API backend.
 
-Saat ini aplikasi menggunakan data lokal melalui `localStorage` dan belum terhubung dengan API backend. Integrasi API direncanakan pada Minggu 19.
+Aplikasi memungkinkan peserta melakukan login, melihat daftar jurnal miliknya, menambahkan jurnal baru, dan menghapus jurnal yang telah dibuat.
 
 ## Fitur
 
-- Menampilkan daftar jurnal harian peserta magang.
+- Login menggunakan email dan password.
+- Menyimpan access token di memori aplikasi.
+- Menampilkan daftar jurnal milik peserta dari API.
+- Menggunakan pagination dari server.
 - Menambahkan jurnal melalui formulir dengan validasi.
-- Menghapus jurnal menggunakan konfirmasi dua langkah.
-- Melakukan review jurnal dengan status Belum, Disetujui, dan Revisi.
-- Mewajibkan catatan mentor ketika status review bukan Belum.
-- Memfilter jurnal berdasarkan status.
-- Mencari jurnal berdasarkan kegiatan dengan jeda 300 ms.
-- Menampilkan ringkasan jumlah jurnal secara otomatis.
-- Menyimpan data menggunakan `localStorage` agar tetap tersedia setelah halaman dimuat ulang.
-- Mengubah judul tab berdasarkan jumlah jurnal.
-- Menyediakan pintasan keyboard `/` untuk membuka pencarian.
+- Menghapus jurnal dengan konfirmasi.
+- Menampilkan status loading, error, data kosong, dan data berhasil.
+- Menampilkan pesan error yang ramah berdasarkan respons API.
+- Menampilkan kode laporan untuk membantu pelacakan error.
+- Memuat ulang daftar jurnal setelah penambahan atau penghapusan data.
+- Menggunakan `AbortController` untuk membatalkan request ketika diperlukan.
 
 ## Teknologi
 
@@ -25,27 +25,54 @@ Saat ini aplikasi menggunakan data lokal melalui `localStorage` dan belum terhub
 - Vite 8
 - CSS Modules
 - Oxlint
-- Browser Local Storage
+- REST API
+- Node.js dan Express (backend)
+- PostgreSQL (database)
 
 ## Cara Menjalankan
 
-Prasyarat: Node.js yang mendukung versi Vite pada proyek ini.
+### Prasyarat
+
+- Node.js
+- npm
+- Repository backend API Magang
+- PostgreSQL yang telah dikonfigurasi untuk backend
+
+### 1. Menjalankan Backend
+
+Buka terminal pertama:
 
 ```bash
-git clone https://github.com/USERNAME/magang-web.git
-cd magang-web
+cd E:\Api-magang
 npm install
 npm run dev
 ```
 
-Buka alamat `http://localhost:5173` melalui browser.
+Pastikan backend berjalan di:
 
-### Halaman Tambahan
+```text
+http://localhost:3000
+```
 
-- Galeri komponen: `http://localhost:5173/?galeri`
-- Latihan state: `http://localhost:5173/?latihan`
+### 2. Menjalankan Frontend
 
-### Perintah yang Tersedia
+Buka terminal kedua:
+
+```bash
+cd E:\magang-web-ajeng
+npm install
+npm run dev
+```
+
+Buka alamat berikut melalui browser:
+
+```text
+http://localhost:5173
+```
+
+Frontend menggunakan proxy Vite untuk meneruskan request `/api` ke backend.
+
+## Perintah yang Tersedia
 
 | Perintah | Fungsi |
 |---|---|
@@ -55,229 +82,69 @@ Buka alamat `http://localhost:5173` melalui browser.
 | `npm run build` | Memeriksa tipe dan membangun aplikasi untuk produksi |
 | `npm run preview` | Menjalankan pratinjau hasil build |
 
-## Struktur Folder
+## Integrasi API
 
-```text
-src/
-├── assets/                 # Aset gambar dan file statis
-├── components/
-│   ├── ui/                 # Komponen UI yang dapat digunakan kembali
-│   ├── jurnal/             # Komponen khusus pengelolaan jurnal
-│   ├── peserta/            # Komponen khusus peserta
-│   └── layout/             # Komponen tata letak
-├── data/                   # Data tiruan peserta dan jurnal
-├── hooks/                  # Custom React hooks
-├── latihan/                # Komponen dan latihan pembelajaran React
-├── pages/                  # Halaman utama dan galeri komponen
-├── types/                  # Definisi tipe TypeScript
-├── utils/                  # Fungsi bantuan, validasi, dan type guard
-├── App.tsx                 # Komponen utama aplikasi
-├── main.tsx                # Titik masuk aplikasi React
-└── index.css               # CSS global
+Frontend berkomunikasi dengan backend melalui endpoint API berikut:
+
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| POST | `/api/v1/auth/login` | Login peserta |
+| GET | `/api/v1/me/jurnal` | Mengambil jurnal peserta dengan pagination |
+| POST | `/api/v1/jurnal` | Menambahkan jurnal |
+| DELETE | `/api/v1/jurnal/:id` | Menghapus jurnal |
+
+Seluruh komunikasi HTTP dikelola melalui `client.ts`, sehingga komponen frontend tidak memanggil `fetch` secara langsung.
+
+## Pengelolaan Autentikasi
+
+Access token disimpan di memori aplikasi menggunakan `setAccessToken`. Token tidak disimpan di `localStorage` maupun URL.
+
+Konsekuensinya, ketika halaman dimuat ulang, sesi login akan berakhir dan pengguna perlu login kembali. Ketika pengguna melakukan logout, token dihapus dari memori aplikasi.
+
+## Penanganan Error
+
+Aplikasi menangani beberapa kondisi error dari API, antara lain:
+
+- `401 Unauthorized`: menampilkan pesan bahwa email atau password salah pada proses login.
+- `422 Validation Error`: menampilkan pesan validasi pada kolom formulir yang sesuai.
+- `429 Rate Limited`: menampilkan pesan ketika terlalu banyak permintaan.
+- `NETWORK_ERROR`: menampilkan pesan ketika koneksi ke server bermasalah.
+- `BAD_RESPONSE`: menampilkan pesan ketika respons server tidak dikenali.
+
+Error ditangani melalui utilitas pemetaan pesan agar pengguna tidak perlu melihat pesan teknis mentah dari server.
+
+## Pembaruan Tipe API
+
+Tipe TypeScript frontend mengikuti dokumentasi OpenAPI backend. Jika dokumentasi API mengalami perubahan, tipe frontend perlu diperbarui menggunakan perintah:
+
+```bash
+npm run api:types
 ```
+
+Pastikan backend atau sumber dokumentasi OpenAPI tersedia sesuai konfigurasi perintah tersebut sebelum menjalankannya.
 
 ## Keputusan Desain
 
-1. **State ditempatkan pada komponen yang membutuhkan.** State `jurnal` dikelola di `DaftarJurnalPage` karena digunakan oleh beberapa komponen. Sementara itu, state konfirmasi hapus dikelola di `JurnalCard` karena hanya digunakan oleh kartu tersebut.
+1. **Pemisahan komunikasi API.** Seluruh request HTTP ditempatkan pada lapisan API, sedangkan komponen berfokus pada tampilan dan interaksi pengguna.
 
-2. **Data turunan dihitung saat render.** Daftar jurnal yang sudah difilter, ringkasan jumlah jurnal, dan informasi hasil pencarian dihitung dari state yang tersedia. Dengan demikian, tidak ada state tambahan yang berpotensi memiliki nilai berbeda dari sumber data utama.
+2. **Penggunaan tipe TypeScript.** Data request dan response menggunakan tipe yang sesuai dengan kontrak API agar kesalahan penggunaan struktur data dapat diketahui saat pengembangan.
 
-3. **Pembaruan array dan objek dilakukan secara immutable.** Operasi seperti menambah, menghapus, dan memperbarui jurnal menggunakan pola yang menghasilkan array baru, bukan mengubah state secara langsung.
+3. **Token disimpan di memori.** Access token tidak disimpan secara permanen di browser. Hal ini membuat pengguna perlu login kembali setelah halaman dimuat ulang.
 
-4. **Data `localStorage` diperiksa menggunakan type guard.** Data hasil `JSON.parse` diperlakukan sebagai `unknown` dan diperiksa bentuknya sebelum digunakan. Data yang tidak valid akan ditolak dan aplikasi menggunakan data awal.
+4. **Status request menggunakan discriminated union.** Status loading, gagal, dan berhasil dibedakan agar setiap kondisi memiliki penanganan yang jelas.
 
-5. **Validasi formulir mengikuti aturan data jurnal.** Formulir memeriksa panjang kegiatan, catatan review, dan data lainnya sebelum menyimpan perubahan. Validasi frontend membantu pengguna, sedangkan backend tetap menjadi penentu validitas data setelah integrasi API.
+5. **Pengambilan data menggunakan AbortController.** Request dapat dibatalkan ketika komponen tidak lagi membutuhkan hasilnya sehingga membantu mencegah respons lama memperbarui tampilan.
 
-6. **Effect digunakan untuk sinkronisasi eksternal.** Contohnya menyimpan perubahan jurnal ke `localStorage` dan memperbarui judul tab browser. Effect yang memasang event listener atau timer perlu memiliki cleanup.
-
-## Alur Data dan Pengelolaan State
-
-```text
-App
-└── DaftarJurnalPage
-    ├── Header
-    ├── RingkasanJurnal
-    ├── FormJurnal
-    └── DaftarJurnal
-        └── JurnalCard
-            └── FormReview
-```
-
-- `jurnal` dikelola pada `DaftarJurnalPage` sebagai sumber data utama.
-- `RingkasanJurnal` menerima data jurnal melalui props.
-- `DaftarJurnal` menerima daftar jurnal dan callback untuk menghapus serta memperbarui review.
-- `JurnalCard` mengelola state lokal untuk konfirmasi penghapusan.
-- `FormReview` mengelola input status dan catatan review.
+6. **Validasi dilakukan di frontend dan backend.** Validasi frontend membantu pengguna mengisi formulir dengan benar, sedangkan backend tetap menjadi penentu validitas data.
 
 ## Keterbatasan
 
-- Aplikasi belum terhubung dengan API backend.
-- Data hanya tersimpan pada `localStorage` browser yang digunakan.
-- Dua tab yang membuka aplikasi secara bersamaan berpotensi memiliki data yang tidak sinkron.
-- ID jurnal masih dibuat di sisi frontend.
-- Fokus keyboard setelah beberapa interaksi belum sepenuhnya dikembalikan ke elemen yang sebelumnya aktif.
+- Pengguna perlu login kembali setelah halaman dimuat ulang karena access token hanya disimpan di memori.
+- Aplikasi membutuhkan backend yang aktif untuk mengambil dan mengelola data jurnal.
+- Fitur refresh token belum menjadi bagian dari mekanisme autentikasi frontend saat ini.
 
 ---
 
 # Catatan Pembelajaran
 
-## Minggu 17
-
-### 1. Imperatif dan Deklaratif
-
-Pendekatan imperatif dilakukan dengan memberikan perintah kepada komputer secara bertahap, seperti membuat elemen dan menambahkan teks ke halaman. Sedangkan pendekatan deklaratif seperti React berfokus pada hasil tampilan yang diinginkan. React akan mengatur perubahan tampilan berdasarkan data yang diberikan.
-
-### 2. Pemisahan Frontend dan Backend
-
-Frontend dan backend dibuat sebagai dua aplikasi terpisah karena memiliki fungsi yang berbeda. Backend bertugas mengolah dan menyediakan data dalam format JSON, sedangkan frontend bertugas menampilkan data kepada pengguna melalui browser. Keduanya berkomunikasi menggunakan HTTP sehingga dapat dikembangkan, diuji, dan dikelola secara terpisah.
-
-### 3. Mengapa Key Menggunakan ID, Bukan Indeks?
-
-React menggunakan `key` untuk mengenali setiap item dalam daftar ketika data ditambahkan, dihapus, atau diurutkan ulang. ID lebih tepat digunakan karena setiap data memiliki identitas yang unik dan tetap. Sementara itu, indeks hanya menunjukkan posisi item dalam array sehingga bisa berubah ketika urutan data berubah.
-
-## Minggu 18
-
-### 1. Kenapa Key Indeks Menimbulkan Bug?
-
-React menggunakan key untuk mengenali setiap elemen dalam daftar. Ketika menggunakan indeks sebagai key, penghapusan item pertama membuat item berikutnya menempati indeks yang sama. React dapat menganggap elemen tersebut masih sama dan menggunakan kembali elemen input beserta isinya. Akibatnya, teks yang diketik pada item pertama dapat berpindah ke item berikutnya. Dengan menggunakan key unik dan stabil seperti ID data, React dapat mengenali setiap item dengan benar.
-
-### 2. Efek atau Bukan? (Kamis, Soal 9)
-
-Pada soal ini, saya mempelajari perbedaan antara data turunan (*derived data*), event handler, dan effect dalam React. Setiap proses harus ditempatkan sesuai dengan fungsinya agar pengelolaan state lebih sederhana dan tidak menimbulkan efek samping yang tidak diperlukan.
-
-| No. | Kasus | Kategori | Alasan |
-|---|---|---|---|
-| a | Menghitung jumlah jurnal belum direview | Data turunan | Jumlah jurnal dapat dihitung langsung dari data yang tersedia menggunakan `filter()` dan `length`. |
-| b | Mengosongkan form setelah jurnal berhasil disimpan | Event handler | Dilakukan sebagai bagian dari proses penyimpanan setelah pengguna menekan tombol Simpan. |
-| c | Menyimpan jurnal ke localStorage setiap kali berubah | Effect | Menyinkronkan perubahan state jurnal dengan penyimpanan browser. |
-| d | Mengatur judul tab sesuai jumlah jurnal | Effect | Mengubah `document.title` berdasarkan jumlah jurnal. |
-| e | Menampilkan pesan berhasil disimpan setelah tombol Simpan ditekan | Event handler | Pesan ditampilkan sebagai respons terhadap aksi pengguna setelah penyimpanan berhasil. |
-| f | Mengurutkan daftar dari terbaru | Data turunan | Urutan jurnal dihitung dari data yang tersedia tanpa mengubah array state asli. |
-
-#### Contoh Penerapan
-
-**Data turunan — menghitung jurnal belum direview**
-
-```tsx
-const jumlahBelum = jurnal.filter(
-  (j) => j.statusReview === "belum"
-).length;
-```
-
-**Event handler — mengosongkan form**
-
-```tsx
-function kirim() {
-  // Proses penyimpanan jurnal
-  setNilai(NILAI_AWAL);
-}
-```
-
-**Effect — menyimpan jurnal ke localStorage**
-
-```tsx
-useEffect(() => {
-  localStorage.setItem("jurnal-magang-v1", JSON.stringify(jurnal));
-}, [jurnal]);
-```
-
-**Effect — mengatur judul tab**
-
-```tsx
-useEffect(() => {
-  document.title = `Jurnal Magang (${jurnal.length})`;
-}, [jurnal.length]);
-```
-
-**Event handler — menampilkan pesan berhasil**
-
-```tsx
-function simpan() {
-  // Proses penyimpanan berhasil
-  setPesan("Berhasil disimpan");
-}
-```
-
-**Data turunan — mengurutkan jurnal terbaru**
-
-```tsx
-const jurnalTerurut = [...jurnal].sort(
-  (a, b) =>
-    new Date(b.createdAt).getTime() -
-    new Date(a.createdAt).getTime()
-);
-```
-
-### 3. Kesimpulan
-
-- **Data turunan:** digunakan untuk menghitung atau mengolah data yang sudah tersedia.
-- **Event handler:** digunakan untuk menjalankan proses sebagai respons terhadap tindakan pengguna.
-- **Effect:** digunakan untuk menyinkronkan React dengan sistem di luar React, seperti `localStorage` dan `document.title`.
-
-Penggunaan `[...jurnal]` sebelum `sort()` diperlukan agar pengurutan tidak mengubah array state asli.
-
-### Refleksi CORS
-
-Origin merupakan gabungan dari skema, host, dan port sehingga `localhost:5173` dan `localhost:3000` termasuk dua origin yang berbeda. Browser menerapkan kebijakan CORS untuk membatasi JavaScript dalam membaca respons dari origin lain yang tidak memberikan izin. Konfigurasi CORS dilakukan pada backend melalui variabel `CORS_ORIGINS`. Dari percobaan ini, saya memahami bahwa permintaan tetap dapat sampai ke backend dan mendapatkan respons HTTP 200, tetapi browser tidak mengizinkan JavaScript membaca respons tersebut. Berbeda dengan browser, `curl` tetap dapat menerima respons karena tidak menerapkan kebijakan CORS.
-### Refleksi preflight
-Pada pengujian preflight, browser mengirim permintaan OPTIONS dengan status 204 sebelum mengirim GET `/me`. Preflight diperlukan karena permintaan menggunakan header Authorization. Setelah server memberikan izin CORS, browser melanjutkan permintaan GET dan menerima status 401 karena token yang digunakan tidak valid. Header `X-Request-Id` belum dapat dibaca JavaScript karena backend belum mengatur `Access-Control-Expose-Headers`.
-
-## Refleksi Minggu 19: Proxy Vite dan nginx
-
-Proxy Vite digunakan saat proses pengembangan, sedangkan nginx digunakan ketika aplikasi sudah berada di lingkungan produksi. Keduanya memiliki fungsi yang sama, yaitu meneruskan permintaan API yang menggunakan awalan `/api` ke server backend.
-
-Dengan menggunakan alamat relatif seperti `/api/v1/me`, frontend tidak perlu mengetahui alamat backend secara langsung. Browser juga menganggap permintaan tersebut berasal dari origin yang sama karena diteruskan melalui proxy atau nginx. Hal ini membantu menghindari masalah CORS.
-
-Dengan demikian, penggunaan proxy Vite dan nginx dapat saling menggantikan tanpa perlu mengubah kode frontend, selama frontend tetap menggunakan alamat API relatif dan konfigurasi penerusannya sesuai.
-
-## Refleksi Minggu 19: Dokumen yang Longgar Menghasilkan Tipe yang Longgar
-
-Pada proyek ini, tipe TypeScript di frontend dihasilkan berdasarkan dokumentasi OpenAPI dari backend. Oleh karena itu, ketepatan tipe yang dihasilkan bergantung pada kelengkapan dokumentasi tersebut.
-
-Saya mempelajari bahwa properti yang tidak dicantumkan dalam bagian `required` akan dianggap opsional. Akibatnya, tipe yang dihasilkan dapat memiliki tanda `?`, sehingga penggunaannya perlu memperhatikan kemungkinan nilai `undefined`.
-
-Untuk mengatasi hal tersebut, saya memperbaiki dokumentasi OpenAPI di backend dengan menentukan properti mana saja yang wajib tersedia. Dengan begitu, tipe yang dihasilkan di frontend menjadi lebih sesuai dengan struktur data API.
-
-Hal ini berkaitan dengan materi Minggu 16, yaitu dokumentasi API bukan hanya sebagai panduan penggunaan, tetapi juga menjadi sumber pembentukan tipe data bagi frontend.
-
-### Penerapan Pemeriksaan Sinkronisasi Tipe API
-
-Pemeriksaan sinkronisasi tipe API lebih cocok diterapkan melalui GitHub Actions (CI) dibandingkan pre-commit. Hal ini karena pre-commit mengharuskan backend selalu berjalan di komputer developer setiap kali melakukan commit.
-
-Pada CI, pemeriksaan dapat dijalankan secara otomatis ketika ada push ke repository. Namun, CI tidak dapat langsung mengakses alamat `localhost` milik komputer developer. Oleh karena itu, dokumentasi OpenAPI perlu disediakan sebagai file `docs/openapi.json` yang dapat diakses oleh workflow CI.
-
-## Catatan Minggu 19: Kenapa Properti ApiError Ditulis Eksplisit
-
-Parameter property seperti `constructor(public status: number)` menghasilkan kode runtime, bukan sekadar tipe. Template Vite mengaktifkan `erasableSyntaxOnly`, yang hanya mengizinkan sintaks yang bisa dihapus begitu saja saat tipe dibuang. Karena itu, properti dideklarasikan sebagai field biasa dan diisi di dalam constructor.
-
-
-## Peta Kode Error ke Perilaku Aplikasi
-
-Tabel berikut merupakan usulan awal perilaku aplikasi berdasarkan kode error API. Implementasinya akan disesuaikan dengan rencana pengerjaan minggu berikutnya.
-
-| Kode | Perilaku aplikasi | Dibangun di |
-|---|---|---|
-| `NETWORK_ERROR` | Pesan koneksi dan tombol "Coba lagi" | Kamis |
-| `BAD_RESPONSE` | Pesan "jawaban tidak dikenali" plus kode laporan | Kamis |
-| `INTERNAL_ERROR` | Pesan umum plus kode laporan | Kamis |
-| `NOT_FOUND` | Pesan "data tidak ditemukan" | Kamis |
-| `UNAUTHORIZED` (layar login) | Pesan "Email atau password salah" | Jumat atau Minggu 20 |
-| `UNAUTHORIZED`, `TOKEN_EXPIRED` | Segarkan token, atau arahkan ke login | Minggu 20 |
-| `INVALID_TOKEN` | Keluar paksa dan arahkan ke login | Minggu 20 |
-| `FORBIDDEN` | Sembunyikan aksi, atau tampilkan "tidak punya akses" | Minggu 20 |
-| `VALIDATION_ERROR` | Pesan di kolom form yang tepat (`detail`) | Jumat |
-| `CONFLICT` | Pesan di kolom atau notifikasi | Jumat atau Minggu 21 |
-| `RATE_LIMITED` | Pesan menunggu dan tombol dinonaktifkan sementara | Jumat |
-| `INVALID_JSON`, `PAYLOAD_TOO_LARGE` | Pesan umum (ini bug frontend, bukan salah pengguna) | Jumat |
-
-## Refleksi Minggu 19: Mengambil Data di useEffect
-
-Selama mengembangkan fitur pengambilan data jurnal, saya mempelajari beberapa masalah yang tidak ditemukan pada penggunaan data statis.
-
-Pertama, saya mempelajari *race condition*, yaitu kondisi ketika respons permintaan lama datang lebih lambat dan menimpa data terbaru. Masalah ini dicegah menggunakan `AbortController` dan pencocokan kunci permintaan.
-
-Kedua, saya mempelajari pengelolaan status memuat, gagal, dan berhasil menggunakan *discriminated union* agar setiap keadaan memiliki penanganan yang jelas, termasuk ketika data berhasil dimuat tetapi masih kosong.
-
-Ketiga, saya mempelajari bahwa pembatalan request tidak boleh dianggap sebagai kegagalan yang perlu ditampilkan kepada pengguna.
-
-Untuk pengelolaan data server yang lebih terstruktur, saya akan mempelajari TanStack Query pada Minggu 21.
+Catatan pembelajaran Minggu 17, Minggu 18, dan Minggu 19 tetap dipertahankan di bagian bawah dokumen.
