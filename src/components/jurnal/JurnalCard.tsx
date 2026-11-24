@@ -8,6 +8,7 @@ import Button from "../ui/Button";
 import FormReview from "./FormReview";
 import styles from "./JurnalCard.module.css";
 import StatusBadge from "./StatusBadge";
+import { useNavigate } from "react-router";
 
 interface JurnalCardProps {
   jurnal: Jurnal;
@@ -40,6 +41,8 @@ export default function JurnalCard({
     link !== null;
 
   const detailTampil = terbuka && adaDetail;
+
+  const navigate = useNavigate();
 
   return (
     <article className={styles.kartu}>
@@ -75,6 +78,15 @@ export default function JurnalCard({
             {sedangReview ? "Tutup review" : "Review"}
           </Button>
         )}
+
+        {/* Tautan ke halaman detail jurnal */}
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => navigate(`/jurnal/${jurnal.id}`)}
+        >
+          Buka halaman
+        </Button>
 
         {onHapus && !konfirmasiHapus && (
           <Button

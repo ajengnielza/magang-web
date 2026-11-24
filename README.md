@@ -148,3 +148,10 @@ Pastikan backend atau sumber dokumentasi OpenAPI tersedia sesuai konfigurasi per
 # Catatan Pembelajaran
 
 Catatan pembelajaran Minggu 17, Minggu 18, dan Minggu 19 tetap dipertahankan di bagian bawah dokumen.
+## Refleksi Minggu 20: Link vs Elemen a
+
+Elemen `<a>` digunakan untuk berpindah halaman dengan memuat ulang seluruh dokumen. Akibatnya, JavaScript dijalankan kembali dari awal dan state aplikasi yang tersimpan di memori akan hilang. Karena token akses disimpan di dalam variabel pada `client.ts`, pemuatan ulang halaman membuat token kembali menjadi `null`, sehingga permintaan API berikutnya dapat menghasilkan error 401.
+
+Sementara itu, `Link` dan `NavLink` dari React Router memungkinkan perpindahan halaman tanpa memuat ulang seluruh dokumen. Dengan begitu, state React dan token yang tersimpan di memori tetap terjaga.
+
+Oleh karena itu, tautan untuk berpindah halaman di dalam aplikasi sebaiknya menggunakan `Link` atau `NavLink`, sedangkan elemen `<a>` digunakan untuk membuka tautan di luar aplikasi.

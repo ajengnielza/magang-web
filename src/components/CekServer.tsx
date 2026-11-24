@@ -1,19 +1,15 @@
 
 import { useState } from "react";
-
-const ALAMAT = "/api/v1/health";
+import { request } from "../api/client";
 
 export default function CekServer() {
   const [hasil, setHasil] = useState("Belum diperiksa");
 
   async function cekServer() {
     try {
-      const response = await fetch(ALAMAT);
-      const data = await response.json();
-
+      const data = await request<unknown>("GET", "/health");
       setHasil(JSON.stringify(data, null, 2));
-    } catch (error) {
-      console.error("Gagal menghubungi server:", error);
+    } catch {
       setHasil("Server tidak terjangkau");
     }
   }

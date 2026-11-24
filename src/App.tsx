@@ -1,18 +1,29 @@
-import DaftarJurnalPage from "./pages/DaftarJurnalPage";
-import GaleriKomponen from "./pages/GaleriKomponen";
-import LatihanState from "./latihan/LatihanState";
-import CekServer from "./components/CekServer";
-import LatihanApi from "./latihan/LatihanApi";
-import JurnalApiPage from "./pages/JurnalApiPage";
+
+import { Navigate, Route, Routes } from "react-router";
+import LayoutAplikasi from "./components/layout/LayoutAplikasi";
+import Halaman404 from "./pages/Halaman404";
+import HalamanDetailJurnal from "./pages/HalamanDetailJurnal";
+import HalamanJurnal from "./pages/HalamanJurnal";
+import HalamanLampiran from "./pages/HalamanLampiran";
+import HalamanLogin from "./pages/HalamanLogin";
+import HalamanProfil from "./pages/HalamanProfil";
 
 export default function App() {
-  const params = new URLSearchParams(window.location.search);
+  return (
+    <Routes>
+      <Route path="/login" element={<HalamanLogin />} />
 
-  if (params.has("galeri")) return <GaleriKomponen />;
-  if (params.has("latihan")) return <LatihanState />;
-  if (params.has("cek-server")) return <CekServer />;
-  if (params.has("api")) return <LatihanApi />;
-  if (params.has("jurnal-api")) return <JurnalApiPage />;
-
-  return <DaftarJurnalPage />;
+      <Route element={<LayoutAplikasi />}>
+        <Route index element={<Navigate to="/jurnal" replace />} />
+        <Route path="jurnal" element={<HalamanJurnal />} />
+        <Route path="jurnal/:id" element={<HalamanDetailJurnal />} />
+        <Route
+          path="jurnal/:id/lampiran/:nomor"
+          element={<HalamanLampiran />}
+        />
+        <Route path="profil" element={<HalamanProfil />} />
+        <Route path="*" element={<Halaman404 />} />
+      </Route>
+    </Routes>
+  );
 }

@@ -1,0 +1,28 @@
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1rem 1rem 0;
+  border-bottom: 2px solid var(--warna-batas);
+}
+
+.nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.tautan {
+  padding: 0.5rem 0.25rem;
+  color: var(--warna-teks-redup);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+
+.aktif {
+  color: var(--warna-utama);
+  border-bottom-color: var(--warna-utama);
+}

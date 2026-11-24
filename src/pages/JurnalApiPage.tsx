@@ -2,7 +2,6 @@ import { useState } from "react";
 import { keluar } from "../api/auth";
 import type { Peserta } from "../api/types";
 import LoginSementara from "../components/auth/LoginSementara";
-import JurnalSaya from "../components/jurnal/JurnalSaya";
 import Button from "../components/ui/Button";
 import Kartu from "../components/ui/Kartu";
 
@@ -38,9 +37,6 @@ export default function JurnalApiPage() {
           Hapus token (uji 401)
         </Button>
       </p>
-      <Kartu judul="Jurnal saya">
-        <JurnalSaya />
-      </Kartu>
     </main>
   );
 }

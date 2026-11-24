@@ -58,3 +58,15 @@ export async function buatJurnal(data: JurnalBaru) {
 export async function hapusJurnal(id: number) {
   await request<void>("DELETE", `/jurnal/${id}`);
 }
+
+// Mengambil satu jurnal berdasarkan ID
+export async function ambilJurnal(
+  id: number,
+  { signal }: { signal?: AbortSignal } = {},
+) {
+  const body = await request<JurnalResponse>("GET", `/jurnal/${id}`, {
+    signal,
+  });
+
+  return body.data;
+}
