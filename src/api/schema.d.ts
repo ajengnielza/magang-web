@@ -898,7 +898,7 @@ export interface paths {
         put?: never;
         /**
          * Login peserta atau mentor
-         * @description Memverifikasi email dan password, lalu mengembalikan access token dan refresh token.
+         * @description Memverifikasi email dan password. Access token dikembalikan melalui response body, sedangkan refresh token disimpan dalam HttpOnly Cookie.
          */
         post: {
             parameters: {
@@ -919,9 +919,11 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Login berhasil */
+                /** @description Login berhasil. Refresh token dikirim melalui HttpOnly Cookie yang berlaku selama 7 hari. */
                 200: {
                     headers: {
+                        /** @description Cookie refreshToken dengan atribut HttpOnly, SameSite=Strict, Path=/api/v1/auth, dan Max-Age 7 hari. */
+                        "Set-Cookie"?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -950,7 +952,7 @@ export interface paths {
         put?: never;
         /**
          * Memperbarui access token
-         * @description Menukar refresh token yang valid untuk mendapatkan access token baru.
+         * @description Menggunakan refresh token dari HttpOnly Cookie untuk mendapatkan access token baru. Refresh token tidak dikirim melalui request body.
          */
         post: {
             parameters: {
@@ -959,16 +961,7 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    /**
-                     * @example {
-                     *       "refreshToken": "tempel_refresh_token_di_sini"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["RefreshRequest"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description Access token berhasil diperbarui */
                 200: {
@@ -976,20 +969,10 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @example true */
-                            sukses?: boolean;
-                            /** @example Berhasil */
-                            pesan?: string;
-                            data?: {
-                                /** @description Access token baru */
-                                accessToken?: string;
-                            };
-                        };
+                        "application/json": components["schemas"]["RefreshResponse"];
                     };
                 };
                 401: components["responses"]["Unauthorized"];
-                422: components["responses"]["ValidationError"];
             };
         };
         delete?: never;
@@ -1009,43 +992,27 @@ export interface paths {
         put?: never;
         /**
          * Logout pengguna
-         * @description Menghapus refresh token yang dikirimkan untuk mengakhiri sesi.
+         * @description Menghapus refresh token dari database jika tersedia dan menghapus HttpOnly Cookie. Endpoint tetap berhasil meskipun cookie tidak dikirim.
          */
         post: {
             parameters: {
                 query?: never;
                 header?: never;
                 path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    /**
-                     * @example {
-                     *       "refreshToken": "tempel_refresh_token_di_sini"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["RefreshRequest"];
+                cookie?: {
+                    /** @description HttpOnly Cookie yang dibuat saat login. */
+                    refreshToken?: string;
                 };
             };
+            requestBody?: never;
             responses: {
-                /** @description Logout berhasil */
-                200: {
+                /** @description Logout berhasil. Cookie refreshToken dihapus. */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            sukses?: boolean;
-                            /** @example Logout berhasil */
-                            pesan?: string;
-                            /** @example null */
-                            data?: unknown;
-                        };
-                    };
+                    content?: never;
                 };
-                422: components["responses"]["ValidationError"];
             };
         };
         delete?: never;
@@ -1147,10 +1114,6 @@ export interface components {
             /** Format: password */
             password: string;
         };
-        RefreshRequest: {
-            /** @description Refresh token untuk mendapatkan access token baru */
-            refreshToken: string;
-        };
         UpdateProfilRequest: {
             nama?: string;
             sekolah?: string;
@@ -1251,8 +1214,17 @@ export interface components {
             pesan: string;
             data: {
                 accessToken: string;
-                refreshToken: string;
                 peserta: components["schemas"]["Peserta"];
+            };
+        };
+        RefreshResponse: {
+            /** @example true */
+            sukses: boolean;
+            /** @example Berhasil */
+            pesan: string;
+            data: {
+                /** @description Access token baru hasil refresh */
+                accessToken: string;
             };
         };
     };

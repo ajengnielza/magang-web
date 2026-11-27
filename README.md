@@ -155,3 +155,37 @@ Elemen `<a>` digunakan untuk berpindah halaman dengan memuat ulang seluruh dokum
 Sementara itu, `Link` dan `NavLink` dari React Router memungkinkan perpindahan halaman tanpa memuat ulang seluruh dokumen. Dengan begitu, state React dan token yang tersimpan di memori tetap terjaga.
 
 Oleh karena itu, tautan untuk berpindah halaman di dalam aplikasi sebaiknya menggunakan `Link` atau `NavLink`, sedangkan elemen `<a>` digunakan untuk membuka tautan di luar aplikasi.
+
+
+## SOAL 2: Tabel Penyimpanan Token
+
+| Jenis Penyimpanan | Cocok untuk Apa? | Kekurangan |
+|---|---|---|
+| **Memory** | Menyimpan access token sementara selama aplikasi berjalan. | Token akan hilang ketika halaman dimuat ulang atau ditutup. |
+| **localStorage** | Menyimpan data yang perlu tetap tersedia meskipun browser ditutup dan dibuka kembali. | Dapat dibaca JavaScript sehingga berisiko dicuri jika terjadi serangan XSS. |
+| **sessionStorage** | Menyimpan data sementara selama sesi tab browser berlangsung. | Tetap dapat dibaca JavaScript dan berisiko dicuri melalui XSS. |
+| **HttpOnly Cookie** | Menyimpan refresh token agar tidak dapat dibaca langsung oleh JavaScript. | Membutuhkan konfigurasi cookie dan perlindungan tambahan seperti SameSite dan Secure. |
+
+### Mengapa Access Token Boleh Disimpan di Memory, Sedangkan Refresh Token Tidak Boleh di localStorage?
+
+Access token boleh disimpan di memory karena memiliki masa berlaku singkat, yaitu sekitar 15 menit. Token ini juga akan hilang ketika halaman ditutup atau dimuat ulang sehingga kesempatan penyerang untuk menggunakannya lebih terbatas.
+
+Sebaliknya, refresh token tidak boleh disimpan di `localStorage` karena memiliki masa berlaku lebih lama, yaitu 7 hari. Refresh token juga dapat digunakan untuk menerbitkan access token baru. Jika berhasil dicuri, penyerang dapat menggunakannya berulang kali selama token masih berlaku.
+
+### Kesimpulan
+
+Access token disimpan di memory karena hanya digunakan sementara, sedangkan refresh token disimpan dalam HttpOnly Cookie agar tidak dapat dibaca langsung oleh JavaScript. Dengan demikian, risiko pencurian refresh token melalui serangan XSS dapat dikurangi.
+
+## Refleksi Minggu 20: Keamanan Refresh Token dan XSS
+
+Pada minggu ini, saya mempelajari bahwa penggunaan cookie `httpOnly` dapat membantu melindungi refresh token agar tidak bisa dibaca langsung oleh JavaScript. Namun, perlindungan ini belum sepenuhnya mengatasi serangan XSS. Skrip berbahaya yang berhasil berjalan di halaman tetap dapat mengirim request refresh menggunakan cookie yang dikirim otomatis oleh browser.
+
+Dengan demikian, cookie `httpOnly` membatasi risiko pencurian refresh token, tetapi pencegahan XSS tetap diperlukan. Beberapa hal yang perlu diperhatikan adalah menggunakan mekanisme escape bawaan React, menghindari penggunaan `dangerouslySetInnerHTML`, serta memvalidasi URL sebelum menampilkannya sebagai tautan.
+
+## Refleksi Minggu 20: Context dan Status Auth
+
+Pada minggu ini, saya mempelajari penggunaan React Context untuk mengelola data yang dibutuhkan oleh banyak komponen tanpa harus meneruskan props secara berulang melalui banyak komponen (*prop drilling*). Context cocok digunakan untuk data seperti status autentikasi, tema, dan bahasa. Namun, penggunaannya perlu disesuaikan karena perubahan nilai Context dapat menyebabkan komponen yang menggunakannya melakukan render ulang.
+
+Saya juga mempelajari bahwa status autentikasi tidak cukup jika hanya menggunakan nilai boolean seperti `sudahLogin`. Aplikasi perlu membedakan empat kondisi, yaitu `memeriksa`, `keluar`, `masuk`, dan `galat`. Status `memeriksa` digunakan ketika aplikasi sedang memulihkan sesi saat pertama kali dibuka. Status `galat` digunakan ketika terjadi gangguan server atau jaringan, sedangkan `keluar` menunjukkan bahwa pengguna memang tidak memiliki sesi yang valid.
+
+Selain itu, saya menerapkan `AuthContext`, `AuthProvider`, dan custom hook `useAuth` untuk mengelola autentikasi. Saya juga menggunakan `useMemo` dan `useCallback` untuk menjaga identitas nilai Context agar tidak berubah ketika dependensinya masih sama. Melalui pengujian, saya memahami bagaimana perubahan identitas objek dan fungsi dapat memengaruhi render ulang komponen.

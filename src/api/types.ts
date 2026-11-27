@@ -17,3 +17,5 @@ export type JurnalListResponse = Skema["JurnalListResponse"];
 export type LoginRequest = Skema["LoginRequest"];
 export type JurnalSayaResponse =
   paths["/me/jurnal"]["get"]["responses"]["200"]["content"]["application/json"];
+export type PesertaResponse = Skema["PesertaResponse"];
+export type RefreshResponse = Skema["RefreshResponse"];

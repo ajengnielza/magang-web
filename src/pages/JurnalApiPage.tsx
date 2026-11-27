@@ -1,39 +1,38 @@
-import { useState } from "react";
-import { keluar } from "../api/auth";
-import type { Peserta } from "../api/types";
-import LoginSementara from "../components/auth/LoginSementara";
+import { useAuth } from "../auth/useAuth";
 import Button from "../components/ui/Button";
-import Kartu from "../components/ui/Kartu";
 
 export default function JurnalApiPage() {
-  const [peserta, setPeserta] = useState<Peserta | null>(null);
+  const { auth, keluar } = useAuth();
 
-  if (peserta === null) {
-    return (
-      <main>
-        <h1>Jurnal dari API</h1>
-        <Kartu judul="Login sementara">
-          <LoginSementara onBerhasil={setPeserta} />
-        </Kartu>
-      </main>
-    );
+  if (auth.status === "memeriksa") {
+    return <p role="status">Memeriksa sesi...</p>;
+  }
+
+  if (auth.status === "galat") {
+    return <p>Terjadi kesalahan saat memeriksa sesi.</p>;
+  }
+
+  if (auth.status === "keluar") {
+    return <p>Silakan masuk untuk melihat jurnal.</p>;
   }
 
   return (
     <main>
-      <h1>Jurnal {peserta.nama}</h1>
+      <h1>Jurnal {auth.pengguna.nama}</h1>
+
       <p>
         <Button
           variant="secondary"
           size="sm"
-          onClick={() => {
-            keluar();
-            setPeserta(null);
-          }}
+          onClick={keluar}
         >
           Keluar
         </Button>{" "}
-        <Button variant="danger" size="sm" onClick={keluar}>
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={keluar}
+        >
           Hapus token (uji 401)
         </Button>
       </p>

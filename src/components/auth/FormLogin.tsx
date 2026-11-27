@@ -1,44 +1,39 @@
 
 import { useState, type FormEvent } from "react";
-import { login } from "../../api/auth";
+import { useAuth } from "../../auth/useAuth";
 import { keApiError } from "../../api/errors";
 import type { ApiError } from "../../api/errors";
 import { kodeLaporan, pesanUntukPengguna } from "../../api/pesan";
-import type { Peserta } from "../../api/types";
 import Alert from "../ui/Alert";
 import Button from "../ui/Button";
-import styles from "./LoginSementara.module.css";
-
-interface LoginSementaraProps {
-  onBerhasil: (peserta: Peserta) => void;
-}
+import styles from "./FormLogin.module.css";
 
 type StatusLogin =
   | { status: "diam" }
   | { status: "memproses" }
   | { status: "gagal"; error: ApiError };
 
-export default function LoginSementara({
-  onBerhasil,
-}: LoginSementaraProps) {
+export default function FormLogin() {
+  const { masuk } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<StatusLogin>({
     status: "diam",
   });
 
-  async function masuk(event: FormEvent<HTMLFormElement>) {
+  async function prosesMasuk(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus({ status: "memproses" });
 
     try {
-      const peserta = await login(email, password);
-      onBerhasil(peserta);
+      await masuk(email.trim(), password);
     } catch (err: unknown) {
       setStatus({
         status: "gagal",
         error: keApiError(err),
       });
+      setPassword("");
     }
   }
 
@@ -56,7 +51,7 @@ export default function LoginSementara({
           </p>
         </div>
 
-        <form className={styles.form} onSubmit={masuk}>
+        <form className={styles.form} onSubmit={prosesMasuk}>
           <div className={styles.field}>
             <label htmlFor="email">Email</label>
             <input
@@ -101,9 +96,7 @@ export default function LoginSementara({
           </div>
         </form>
 
-        <p className={styles.footer}>
-          Sistem Jurnal Peserta
-        </p>
+        <p className={styles.footer}>Sistem Jurnal Peserta</p>
       </section>
     </main>
   );

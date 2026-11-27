@@ -1,6 +1,9 @@
 
 import { BASE_URL } from "../config";
 import { ApiError, bacaErrorBody } from "./errors";
+import type { RefreshResponse } from "./types";
+
+const LINTAS_ORIGIN = BASE_URL.startsWith("http");
 
 type Metode = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type NilaiQuery = string | number | boolean | undefined;
@@ -62,6 +65,7 @@ export async function request<T>(
           ? JSON.stringify(opsi.body)
           : undefined,
       signal: opsi.signal,
+      credentials: LINTAS_ORIGIN ? "include" : "same-origin",
     });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
@@ -119,4 +123,25 @@ export async function request<T>(
   }
 
   return json as T;
+}
+
+// ---- Sesi ----
+let handlerSesiBerakhir: (() => void) | null = null;
+
+export function setSesiBerakhirHandler(
+  handler: (() => void) | null
+): void {
+  handlerSesiBerakhir = handler;
+}
+
+// Dipakai penyegaran otomatis (Kamis). Hari ini hanya disiapkan.
+export function beritahuSesiBerakhir(): void {
+  handlerSesiBerakhir?.();
+}
+
+// Cookie refreshToken ikut terkirim otomatis oleh browser.
+export async function refreshSekali(): Promise<string> {
+  const body = await request<RefreshResponse>("POST", "/auth/refresh");
+  setAccessToken(body.data.accessToken);
+  return body.data.accessToken;
 }

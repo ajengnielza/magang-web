@@ -1,6 +1,5 @@
-
 import { NavLink, Outlet, useNavigate } from "react-router";
-import { keluar } from "../../api/auth";
+import { useAuth } from "../../auth/useAuth";
 import { cx } from "../../utils/cx";
 import Button from "../ui/Button";
 import styles from "./LayoutAplikasi.module.css";
@@ -10,7 +9,13 @@ function kelasTautan({ isActive }: { isActive: boolean }): string {
 }
 
 export default function LayoutAplikasi() {
+  const { auth, keluar } = useAuth();
   const navigate = useNavigate();
+
+  async function tekanKeluar() {
+    await keluar();
+    navigate("/login", { replace: true });
+  }
 
   return (
     <>
@@ -19,22 +24,19 @@ export default function LayoutAplikasi() {
           <NavLink to="/jurnal" className={kelasTautan}>
             Jurnal
           </NavLink>
-
           <NavLink to="/profil" className={kelasTautan}>
             Profil
           </NavLink>
         </nav>
 
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => {
-            keluar();
-            navigate("/login", { replace: true });
-          }}
-        >
+        <div>
+          {auth.status === "masuk" && (
+            <span>{auth.pengguna.nama} </span>
+          )}
+          <Button variant="secondary" size="sm" onClick={tekanKeluar}>
           Keluar
         </Button>
+        </div>
       </header>
 
       <main>

@@ -1,5 +1,7 @@
 
 import { Navigate, Route, Routes } from "react-router";
+import { useAuth } from "./auth/useAuth";
+import LayarGalat from "./components/auth/LayarGalat";
 import LayoutAplikasi from "./components/layout/LayoutAplikasi";
 import Halaman404 from "./pages/Halaman404";
 import HalamanDetailJurnal from "./pages/HalamanDetailJurnal";
@@ -9,6 +11,16 @@ import HalamanLogin from "./pages/HalamanLogin";
 import HalamanProfil from "./pages/HalamanProfil";
 
 export default function App() {
+  const { auth } = useAuth();
+
+  if (auth.status === "memeriksa") {
+    return <p role="status">Memeriksa sesi...</p>;
+  }
+
+  if (auth.status === "galat") {
+    return <LayarGalat error={auth.error} />;
+  }
+
   return (
     <Routes>
       <Route path="/login" element={<HalamanLogin />} />

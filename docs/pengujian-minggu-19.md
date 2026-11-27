@@ -256,3 +256,23 @@ Pengujian dilakukan pada aplikasi frontend yang terhubung dengan REST API backen
 Pengujian dilakukan untuk memeriksa ketahanan frontend ketika menghadapi gangguan koneksi, kesalahan input, kegagalan autentikasi, dan respons error dari backend.
 
 Hasil pengujian akan digunakan untuk menemukan kekurangan aplikasi, memperbaiki perilaku yang belum sesuai, dan mendokumentasikan temuan selama proses pengembangan Minggu 19.
+
+## Perubahan yang Mematahkan Klien: Refresh Token Menggunakan Cookie
+
+### Apa yang berubah?
+
+Refresh token tidak lagi dikirim melalui body respons login. Token dikirim melalui cookie dengan pengaturan `httpOnly`, `SameSite=Strict`, `Path=/api/v1/auth`, dan masa berlaku tujuh hari.
+
+Endpoint `POST /auth/refresh` dan `POST /auth/logout` sekarang membaca refresh token dari cookie, bukan dari body request. Endpoint logout mengembalikan status `204 No Content`.
+
+### Mengapa diubah?
+
+Penyimpanan refresh token yang dapat dibaca JavaScript memiliki risiko pencurian token melalui serangan XSS. Dengan cookie `httpOnly`, JavaScript tidak dapat membaca nilai refresh token secara langsung.
+
+### Dampak terhadap klien lama
+
+Perubahan ini membuat klien lama yang masih mengirim refresh token melalui body tidak kompatibel dengan mekanisme baru.
+
+Jika API sudah digunakan oleh klien produksi, migrasi sebaiknya dilakukan melalui versi API baru atau masa transisi. Klien lama dapat dipertahankan sementara dengan peringatan deprecation, kemudian dimigrasikan secara bertahap sebelum jalur lama dihapus.
+
+Pada proyek ini, perubahan diterapkan langsung pada versi API yang sedang dikembangkan karena belum ada klien produksi yang perlu dipertahankan.
